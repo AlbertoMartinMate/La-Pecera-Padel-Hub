@@ -97,7 +97,7 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    return render_template('dashboard.html', nombre=session.get('user_name'))
+    return render_template('dashboard_new.html')
 
 @app.route('/logout')
 def logout():
@@ -117,7 +117,7 @@ def admin_panel():
     # Obtener todos los usuarios
     usuarios = Usuario.query.order_by(Usuario.fecha_registro.desc()).all()
     
-    return render_template('admin.html', usuarios=usuarios)
+    return render_template('admin_new.html', usuarios=usuarios)
 
 @app.route('/admin/toggle_user/<int:user_id>')
 def toggle_user(user_id):
@@ -132,10 +132,6 @@ def toggle_user(user_id):
     
     return redirect(url_for('admin_panel'))
 
-# Crear las tablas en la base de datos
-with app.app_context():
-    db.create_all()
-    
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
