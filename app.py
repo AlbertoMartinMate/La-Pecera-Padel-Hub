@@ -135,6 +135,14 @@ def toggle_user(user_id):
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
+    
+    # TEMPORAL: Crear primer admin
+    admin_email = "mate.martin.alberto@gmail.com"  # ⬅️ CAMBIA ESTO POR TU EMAIL REAL
+    usuario = Usuario.query.filter_by(email=admin_email).first()
+    if usuario and not usuario.es_admin:
+        usuario.es_admin = True
+        db.session.commit()
+        print(f"✅ {usuario.nombre} es ahora admin")
 
 if __name__ == '__main__':
     app.run(debug=True)
