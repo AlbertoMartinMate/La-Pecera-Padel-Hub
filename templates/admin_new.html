@@ -8,42 +8,57 @@
     <nav class="bg-dark-card border-b border-dark-border sticky top-0 z-50 backdrop-blur-lg bg-opacity-90">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center">
-                        <span class="text-xl">🎾</span>
+                <!-- Logo with Dropdown Menu -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-3 hover:opacity-80 transition cursor-pointer">
+                        <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center">
+                            <span class="text-xl">🎾</span>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                            La Pecera
+                        </span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-200 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute left-0 mt-2 w-48 bg-dark-card border border-dark-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <a href="{{ url_for('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition rounded-t-lg">
+                            <span class="mr-2">🏠</span> Inicio
+                        </a>
+                        <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
+                            <span class="mr-2">📊</span> Estadísticas
+                        </a>
+                        <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
+                            <span class="mr-2">🏆</span> Ranking
+                        </a>
+                        <div class="border-t border-dark-border"></div>
+                        <a href="{{ url_for('admin_panel') }}" class="block px-4 py-3 text-accent hover:bg-accent/10 transition">
+                            <span class="mr-2">⚙️</span> Admin
+                        </a>
+                        <div class="border-t border-dark-border"></div>
+                        <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-red-400 hover:bg-red-900/20 transition rounded-b-lg">
+                            <span class="mr-2">🚪</span> Cerrar Sesión
+                        </a>
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-                        La Pecera
-                    </span>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden md:flex items-center space-x-1">
-                    <a href="{{ url_for('dashboard') }}" class="px-4 py-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-dark-bg transition">
-                        Inicio
-                    </a>
-                    <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-dark-bg transition">
-                        Estadísticas
-                    </a>
-                    <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-dark-bg transition">
-                        Perfil
-                    </a>
-                    <a href="{{ url_for('admin_panel') }}" class="px-4 py-2 rounded-lg bg-accent/20 text-accent font-medium">
-                        ⚙️ Admin
-                    </a>
-                </div>
-
-                <!-- User Menu -->
-                <div class="flex items-center space-x-4">
+                <!-- User Profile Button -->
+                <a href="#" class="flex items-center space-x-3 hover:bg-dark-bg px-3 py-2 rounded-lg transition group">
+                    <!-- Avatar with initials -->
+                    <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center">
+                        <span class="text-lg font-bold text-dark-bg">
+                            {{ session.user_name[0].upper() }}
+                        </span>
+                    </div>
                     <div class="hidden md:block text-right">
-                        <p class="text-sm font-medium text-gray-100">{{ session.user_name }}</p>
+                        <p class="text-sm font-medium text-gray-100 group-hover:text-secondary transition">
+                            {{ session.user_name }}
+                        </p>
                         <p class="text-xs text-gray-400">Administrador</p>
                     </div>
-                    <a href="{{ url_for('logout') }}" class="px-4 py-2 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-900/50 transition font-medium text-sm">
-                        Salir
-                    </a>
-                </div>
+                </a>
             </div>
         </div>
     </nav>

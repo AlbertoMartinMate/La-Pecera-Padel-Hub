@@ -51,6 +51,7 @@
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
                         Email
+                        <span class="text-xs text-gray-500 font-normal ml-2">(mismo correo de Playtomic)</span>
                     </label>
                     <input 
                         type="email" 
@@ -60,6 +61,26 @@
                         class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition"
                         placeholder="tu@email.com"
                     >
+                    <p class="text-xs text-gray-500 mt-1">Usa el mismo email que tienes en Playtomic</p>
+                </div>
+
+                <div>
+                    <label for="nivel_playtomic" class="block text-sm font-medium text-gray-300 mb-2">
+                        Nivel de Playtomic
+                        <span class="text-xs text-gray-500 font-normal ml-2">(ej: 2.5, 3.0, 4.5)</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        id="nivel_playtomic" 
+                        name="nivel_playtomic" 
+                        step="0.1"
+                        min="0"
+                        max="7"
+                        required
+                        class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition"
+                        placeholder="3.5"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Indica tu nivel actual de Playtomic (de 0 a 7)</p>
                 </div>
                 
                 <div>
@@ -74,6 +95,23 @@
                         class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition"
                         placeholder="••••••••"
                     >
+                </div>
+
+                <!-- Términos y condiciones -->
+                <div class="flex items-start">
+                    <input 
+                        type="checkbox" 
+                        id="acepta_terminos" 
+                        name="acepta_terminos" 
+                        required
+                        class="w-4 h-4 mt-1 bg-dark-bg border-dark-border rounded text-secondary focus:ring-secondary focus:ring-2"
+                    >
+                    <label for="acepta_terminos" class="ml-3 text-sm text-gray-400">
+                        Acepto los 
+                        <a href="#" class="text-secondary hover:text-accent transition font-medium">términos y condiciones</a>
+                        y la 
+                        <a href="#" class="text-secondary hover:text-accent transition font-medium">política de privacidad</a>
+                    </label>
                 </div>
                 
                 <button 

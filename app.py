@@ -35,12 +35,26 @@ class Usuario(db.Model):
     password_hash = db.Column(db.String(200), nullable=False)
     es_admin = db.Column(db.Boolean, default=False)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Nuevos campos
+    nivel_playtomic = db.Column(db.Float, default=0.0)  # Nivel de Playtomic (ej: 3.5, 4.0, etc.)
+    foto_perfil = db.Column(db.String(200), default='default.png')  # URL o nombre de archivo
+    puntos_ranking = db.Column(db.Integer, default=0)  # Puntos para el ranking
+    categoria = db.Column(db.String(20), default='Bronce')  # Bronce, Plata, Oro
+    telefono = db.Column(db.String(20), nullable=True)  # Teléfono opcional
+    acepta_terminos = db.Column(db.Boolean, default=False)  # Aceptación RGPD
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def calcular_categoria(self):
+        """Calcula la categoría según participaciones (será implementado con el sistema de pozos)"""
+        # Por ahora mantiene la categoría actual
+        # Luego: Bronce < 5 pozos, Plata 5-15, Oro > 15
+        return self.categoria
 
 # Rutas
 @app.route('/')
@@ -74,6 +88,13 @@ def registro():
         nombre = request.form.get('nombre')
         email = request.form.get('email')
         password = request.form.get('password')
+        nivel_playtomic = request.form.get('nivel_playtomic', 0.0)
+        acepta_terminos = request.form.get('acepta_terminos') == 'on'
+        
+        # Validar aceptación de términos
+        if not acepta_terminos:
+            flash('Debes aceptar los términos y condiciones', 'error')
+            return redirect(url_for('registro'))
         
         # Verificar si el email ya existe
         if Usuario.query.filter_by(email=email).first():
@@ -81,7 +102,12 @@ def registro():
             return redirect(url_for('registro'))
         
         # Crear nuevo usuario
-        nuevo_usuario = Usuario(nombre=nombre, email=email)
+        nuevo_usuario = Usuario(
+            nombre=nombre, 
+            email=email,
+            nivel_playtomic=float(nivel_playtomic) if nivel_playtomic else 0.0,
+            acepta_terminos=True
+        )
         nuevo_usuario.set_password(password)
         
         db.session.add(nuevo_usuario)
