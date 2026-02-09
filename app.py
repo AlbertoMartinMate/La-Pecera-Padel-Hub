@@ -161,6 +161,48 @@ def toggle_user(user_id):
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
+    
+    # MIGRACIÓN AUTOMÁTICA - Añadir nuevas columnas si no existen
+    from sqlalchemy import text, inspect
+    try:
+        inspector = inspect(db.engine)
+        columns = [col['name'] for col in inspector.get_columns('usuario')]
+        
+        with db.engine.connect() as conn:
+            # Añadir columnas nuevas solo si no existen
+            if 'nivel_playtomic' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN nivel_playtomic FLOAT DEFAULT 0.0'))
+                conn.commit()
+                print("✅ Añadida columna: nivel_playtomic")
+            
+            if 'foto_perfil' not in columns:
+                conn.execute(text("ALTER TABLE usuario ADD COLUMN foto_perfil VARCHAR(200) DEFAULT 'default.png'"))
+                conn.commit()
+                print("✅ Añadida columna: foto_perfil")
+            
+            if 'puntos_ranking' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN puntos_ranking INTEGER DEFAULT 0'))
+                conn.commit()
+                print("✅ Añadida columna: puntos_ranking")
+            
+            if 'categoria' not in columns:
+                conn.execute(text("ALTER TABLE usuario ADD COLUMN categoria VARCHAR(20) DEFAULT 'Bronce'"))
+                conn.commit()
+                print("✅ Añadida columna: categoria")
+            
+            if 'telefono' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN telefono VARCHAR(20)'))
+                conn.commit()
+                print("✅ Añadida columna: telefono")
+            
+            if 'acepta_terminos' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN acepta_terminos BOOLEAN DEFAULT TRUE'))
+                conn.commit()
+                print("✅ Añadida columna: acepta_terminos")
+            
+        print("✅ Migración completada exitosamente")
+    except Exception as e:
+        print(f"Migración: {e}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
