@@ -27,10 +27,13 @@
                         <a href="{{ url_for('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition rounded-t-lg">
                             <span class="mr-2">🏠</span> Inicio
                         </a>
-                        <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
+                        <a href="{{ url_for('pozos') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
+                            <span class="mr-2">🎱</span> Pozos
+                        </a>
+                        <a href="{{ url_for('estadisticas') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
                             <span class="mr-2">📊</span> Estadísticas
                         </a>
-                        <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
+                        <a href="{{ url_for('ranking') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
                             <span class="mr-2">🏆</span> Ranking
                         </a>
                         {% if session.is_admin %}

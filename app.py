@@ -56,6 +56,24 @@ class Usuario(db.Model):
         # Luego: Bronce < 5 pozos, Plata 5-15, Oro > 15
         return self.categoria
 
+# Modelo de Pozo
+class Pozo(db.Model):
+    __tablename__ = 'pozos'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    nivel_min = db.Column(db.Float, nullable=False)  # Float para que coincida con nivel_playtomic
+    nivel_max = db.Column(db.Float, nullable=False)
+    enlace = db.Column(db.String(500), nullable=False)
+    fecha = db.Column(db.DateTime, nullable=True)
+    activo = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Pozo {self.titulo} (Nivel {self.nivel_min}-{self.nivel_max})>'
+
+# Rutas
+
 # Rutas
 @app.route('/')
 def index():
@@ -124,6 +142,38 @@ def dashboard():
         return redirect(url_for('login'))
     
     return render_template('dashboard_new.html')
+
+
+@app.route('/pozos')
+def pozos():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    usuario = Usuario.query.get(session['user_id'])
+    mi_nivel = usuario.nivel_playtomic
+    
+    # Solo pozos donde mi nivel está en el rango
+    pozos = Pozo.query.filter(
+        Pozo.activo == True,
+        Pozo.nivel_min <= mi_nivel,
+        Pozo.nivel_max >= mi_nivel
+    ).order_by(Pozo.fecha).all()
+    
+    return render_template('pozos.html', pozos=pozos, mi_nivel=mi_nivel)
+
+@app.route('/estadisticas')
+def estadisticas():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('estadisticas.html')
+
+@app.route('/ranking')
+def ranking():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('ranking.html')
 
 @app.route('/logout')
 def logout():
@@ -200,9 +250,20 @@ with app.app_context():
                 conn.commit()
                 print("✅ Añadida columna: acepta_terminos")
             
-        print("✅ Migración completada exitosamente")
+        print("✅ Migración de Usuario completada")
     except Exception as e:
-        print(f"Migración: {e}")
+        print(f"Migración Usuario: {e}")
+    
+    # Crear tabla pozos si no existe
+    try:
+        inspector = inspect(db.engine)
+        if 'pozos' not in inspector.get_table_names():
+            Pozo.__table__.create(db.engine)
+            print("✅ Tabla pozos creada")
+        else:
+            print("✅ Tabla pozos ya existe")
+    except Exception as e:
+        print(f"Migración Pozos: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

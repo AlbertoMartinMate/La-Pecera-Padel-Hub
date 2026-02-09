@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Pozos - La Pecera Padel Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center text-white mb-2">🎱 Pozos Disponibles</h1>
+    <p class="text-center text-gray-400 mb-8">Tu nivel: {{ mi_nivel }}</p>
+    
+    {% if pozos %}
+        <div class="grid gap-6">
+            {% for pozo in pozos %}
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-primary transition-all">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-white">{{ pozo.titulo }}</h3>
+                    <span class="bg-gradient-to-r from-purple-600 to-purple-400 text-white px-3 py-1 rounded-full text-sm">
+                        Nivel {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
+                    </span>
+                </div>
+                {% if pozo.fecha %}
+                    <p class="text-gray-400 mb-4">📅 {{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                {% endif %}
+                <a href="{{ pozo.enlace }}" target="_blank" 
+                   class="inline-block bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
+                    Inscribirse →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
+            <p class="text-gray-400 text-lg mb-2">😕 No hay pozos disponibles para tu nivel ahora mismo</p>
+            <p class="text-gray-500 text-sm">Los pozos aparecerán cuando el admin cree uno para tu nivel ({{ mi_nivel }})</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
