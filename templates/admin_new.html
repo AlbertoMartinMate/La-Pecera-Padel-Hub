@@ -204,7 +204,7 @@
                             </th>
                         </tr>
                     </thead>
-                    
+
                     <tbody class="divide-y divide-dark-border">
                         {% for usuario in usuarios %}
                         <tr class="hover:bg-dark-bg/50 transition">
@@ -224,6 +224,16 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-400">{{ usuario.email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <form action="{{ url_for('actualizar_nivel', user_id=usuario.id) }}" method="POST" class="flex items-center space-x-2">
+                                    <input type="number" name="nivel" value="{{ usuario.nivel_playtomic }}" 
+                                        min="0" max="7" step="0.5"
+                                        class="w-16 bg-dark-bg border border-dark-border rounded px-2 py-1 text-sm text-gray-100 focus:border-secondary focus:outline-none">
+                                    <button type="submit" class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-2 py-1 rounded text-xs transition">
+                                        ✓
+                                    </button>
+                                </form>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if usuario.es_admin %}
