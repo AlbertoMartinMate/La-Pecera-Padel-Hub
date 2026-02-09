@@ -188,10 +188,13 @@
                     <thead class="bg-dark-bg">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Usuario
+                                 Usuario
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                 Email
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Nivel
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                 Rol
@@ -201,6 +204,7 @@
                             </th>
                         </tr>
                     </thead>
+                    
                     <tbody class="divide-y divide-dark-border">
                         {% for usuario in usuarios %}
                         <tr class="hover:bg-dark-bg/50 transition">

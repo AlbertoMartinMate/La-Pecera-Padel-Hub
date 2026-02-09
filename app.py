@@ -208,6 +208,21 @@ def toggle_user(user_id):
     
     return redirect(url_for('admin_panel'))
 
+@app.route('/admin/actualizar_nivel/<int:user_id>', methods=['POST'])
+def actualizar_nivel(user_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    usuario = Usuario.query.get(user_id)
+    if usuario:
+        nuevo_nivel = request.form.get('nivel', 0)
+        usuario.nivel_playtomic = float(nuevo_nivel)
+        db.session.commit()
+        flash(f'Nivel de {usuario.nombre} actualizado a {nuevo_nivel}', 'success')
+    
+    return redirect(url_for('admin_panel'))
+
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
