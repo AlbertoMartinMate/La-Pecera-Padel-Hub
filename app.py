@@ -230,10 +230,10 @@ def admin_panel():
         flash('No tienes permisos de administrador', 'error')
         return redirect(url_for('dashboard'))
     
-    # Obtener todos los usuarios
     usuarios = Usuario.query.order_by(Usuario.fecha_registro.desc()).all()
+    pozos = Pozo.query.filter_by(activo=True).order_by(Pozo.fecha).all()
     
-    return render_template('admin_new.html', usuarios=usuarios)
+    return render_template('admin_new.html', usuarios=usuarios, pozos=pozos)
 
 @app.route('/admin/toggle_user/<int:user_id>')
 def toggle_user(user_id):
@@ -297,6 +297,44 @@ def crear_pozo():
         return redirect(url_for('admin_panel'))
     
     return render_template('crear_pozo.html')
+
+@app.route('/admin/editar_pozo/<int:pozo_id>', methods=['GET', 'POST'])
+def editar_pozo(pozo_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    pozo = Pozo.query.get_or_404(pozo_id)
+    
+    if request.method == 'POST':
+        pozo.titulo = request.form.get('titulo')
+        pozo.nivel_min = float(request.form.get('nivel_min', 0))
+        pozo.nivel_max = float(request.form.get('nivel_max', 7))
+        pozo.enlace = request.form.get('enlace')
+        fecha_str = request.form.get('fecha')
+        
+        if fecha_str:
+            pozo.fecha = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
+        
+        db.session.commit()
+        flash(f'Pozo "{pozo.titulo}" actualizado', 'success')
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('editar_pozo.html', pozo=pozo)
+
+@app.route('/admin/borrar_pozo/<int:pozo_id>')
+def borrar_pozo(pozo_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    pozo = Pozo.query.get_or_404(pozo_id)
+    titulo = pozo.titulo
+    db.session.delete(pozo)
+    db.session.commit()
+    
+    flash(f'Pozo "{titulo}" eliminado', 'success')
+    return redirect(url_for('admin_panel'))
 
 # Crear las tablas en la base de datos
 with app.app_context():

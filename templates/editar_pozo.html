@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Pozo - La Pecera Padel Hub{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Main Content -->
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <div class="flex items-center mb-8">
+            <a href="{{ url_for('admin_panel') }}" class="text-gray-400 hover:text-white mr-4">
+                ← Volver
+            </a>
+            <h1 class="text-3xl font-bold text-white">✏️ Editar Pozo</h1>
+        </div>
+        
+        <form method="POST" class="bg-dark-card border border-dark-border rounded-xl p-6 space-y-6">
+            
+            <!-- Título -->
+            <div>
+                <label class="block text-gray-300 mb-2">Título del Pozo</label>
+                <input type="text" name="titulo" required
+                    value="{{ pozo.titulo }}"
+                    class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-100 focus:border-secondary focus:outline-none">
+            </div>
+            
+            <!-- Niveles -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">Nivel Mínimo</label>
+                    <input type="number" name="nivel_min" required
+                        min="0" max="7" step="0.5" value="{{ pozo.nivel_min }}"
+                        class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-100 focus:border-secondary focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Nivel Máximo</label>
+                    <input type="number" name="nivel_max" required
+                        min="0" max="7" step="0.5" value="{{ pozo.nivel_max }}"
+                        class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-100 focus:border-secondary focus:outline-none">
+                </div>
+            </div>
+            
+            <!-- Fecha -->
+            <div>
+                <label class="block text-gray-300 mb-2">Fecha y Hora</label>
+                <input type="datetime-local" name="fecha"
+                    value="{{ pozo.fecha.strftime('%Y-%m-%dT%H:%M') if pozo.fecha else '' }}"
+                    class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-100 focus:border-secondary focus:outline-none">
+            </div>
+            
+            <!-- Enlace -->
+            <div>
+                <label class="block text-gray-300 mb-2">Enlace de Inscripción</label>
+                <input type="url" name="enlace" required
+                    value="{{ pozo.enlace }}"
+                    class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-100 focus:border-secondary focus:outline-none">
+            </div>
+            
+            <!-- Botones -->
+            <div class="flex space-x-4">
+                <button type="submit" 
+                    class="flex-1 bg-gradient-to-r from-green-500 to-teal-500 text-white py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
+                    Guardar Cambios
+                </button>
+                <a href="{{ url_for('borrar_pozo', pozo_id=pozo.id) }}" 
+                    onclick="return confirm('¿Seguro que quieres eliminar este pozo?')"
+                    class="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition">
+                    🗑️ Eliminar
+                </a>
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}
