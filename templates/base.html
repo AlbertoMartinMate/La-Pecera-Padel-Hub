@@ -58,18 +58,26 @@
                     
                     <!-- Dropdown Menu -->
                     <div class="absolute left-0 mt-2 w-48 bg-dark-card border border-dark-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        {% if request.endpoint != 'dashboard' %}
                         <a href="{{ url_for('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition rounded-t-lg">
                             <span class="mr-2">🏠</span> Inicio
                         </a>
+                        {% endif %}
+                        {% if request.endpoint != 'pozos' %}
                         <a href="{{ url_for('pozos') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
                             <span class="mr-2">🎱</span> Pozos
                         </a>
+                        {% endif %}
+                        {% if request.endpoint != 'estadisticas' %}
                         <a href="{{ url_for('estadisticas') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
                             <span class="mr-2">📊</span> Estadísticas
                         </a>
+                        {% endif %}
+                        {% if request.endpoint != 'ranking' %}
                         <a href="{{ url_for('ranking') }}" class="block px-4 py-3 text-gray-300 hover:bg-dark-bg hover:text-secondary transition">
                             <span class="mr-2">🏆</span> Ranking
                         </a>
+                        {% endif %}
                         {% if session.get('is_admin') %}
                         <div class="border-t border-dark-border"></div>
                         <a href="{{ url_for('admin_panel') }}" class="block px-4 py-3 text-accent hover:bg-accent/10 transition">
