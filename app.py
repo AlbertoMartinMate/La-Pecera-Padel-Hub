@@ -171,7 +171,17 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    return render_template('dashboard_new.html')
+    usuario = Usuario.query.get(session['user_id'])
+    mi_nivel = usuario.nivel_playtomic
+    
+    # Próximos 3 pozos de mi nivel
+    proximos_pozos = Pozo.query.filter(
+        Pozo.activo == True,
+        Pozo.nivel_min <= mi_nivel,
+        Pozo.nivel_max >= mi_nivel
+    ).order_by(Pozo.fecha).limit(3).all()
+    
+    return render_template('dashboard_new.html', proximos_pozos=proximos_pozos)
 
 
 @app.route('/pozos')
@@ -264,12 +274,19 @@ def crear_pozo():
         nivel_min = float(request.form.get('nivel_min', 0))
         nivel_max = float(request.form.get('nivel_max', 7))
         enlace = request.form.get('enlace')
+        fecha_str = request.form.get('fecha')
+        
+        # Convertir fecha
+        fecha = None
+        if fecha_str:
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
         
         nuevo_pozo = Pozo(
             titulo=titulo,
             nivel_min=nivel_min,
             nivel_max=nivel_max,
             enlace=enlace,
+            fecha=fecha,
             activo=True
         )
         
