@@ -72,6 +72,36 @@ class Pozo(db.Model):
     def __repr__(self):
         return f'<Pozo {self.titulo} (Nivel {self.nivel_min}-{self.nivel_max})>'
 
+# Modelo de Pozo Jugado (historial permanente)
+class PozoJugado(db.Model):
+    __tablename__ = 'pozos_jugados'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    fecha = db.Column(db.DateTime, nullable=False)
+    nivel = db.Column(db.Float, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relación con resultados
+    resultados = db.relationship('Resultado', backref='pozo_jugado', lazy=True)
+    
+    def __repr__(self):
+        return f'<PozoJugado {self.titulo}>'
+
+# Modelo de Resultado (participaciones)
+class Resultado(db.Model):
+    __tablename__ = 'resultados'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    pozo_jugado_id = db.Column(db.Integer, db.ForeignKey('pozos_jugados.id'), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    posicion = db.Column(db.Integer, nullable=True)  # 1, 2, 3 para top 3, NULL para resto
+    puntos = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Resultado {self.email} - Pos {self.posicion}>'
+
 # Rutas
 
 # Rutas
@@ -223,6 +253,34 @@ def actualizar_nivel(user_id):
     
     return redirect(url_for('admin_panel'))
 
+@app.route('/admin/crear_pozo', methods=['GET', 'POST'])
+def crear_pozo():
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        titulo = request.form.get('titulo')
+        nivel_min = float(request.form.get('nivel_min', 0))
+        nivel_max = float(request.form.get('nivel_max', 7))
+        enlace = request.form.get('enlace')
+        
+        nuevo_pozo = Pozo(
+            titulo=titulo,
+            nivel_min=nivel_min,
+            nivel_max=nivel_max,
+            enlace=enlace,
+            activo=True
+        )
+        
+        db.session.add(nuevo_pozo)
+        db.session.commit()
+        
+        flash(f'Pozo "{titulo}" creado correctamente', 'success')
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('crear_pozo.html')
+
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
@@ -279,6 +337,26 @@ with app.app_context():
             print("✅ Tabla pozos ya existe")
     except Exception as e:
         print(f"Migración Pozos: {e}")
+    
+        # Crear tabla pozos_jugados si no existe
+    try:
+        if 'pozos_jugados' not in inspector.get_table_names():
+            PozoJugado.__table__.create(db.engine)
+            print("✅ Tabla pozos_jugados creada")
+        else:
+            print("✅ Tabla pozos_jugados ya existe")
+    except Exception as e:
+        print(f"Migración PozosJugados: {e}")
+    
+    # Crear tabla resultados si no existe
+    try:
+        if 'resultados' not in inspector.get_table_names():
+            Resultado.__table__.create(db.engine)
+            print("✅ Tabla resultados creada")
+        else:
+            print("✅ Tabla resultados ya existe")
+    except Exception as e:
+        print(f"Migración Resultados: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
