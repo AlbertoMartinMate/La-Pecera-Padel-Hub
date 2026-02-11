@@ -336,6 +336,104 @@ def borrar_pozo(pozo_id):
     flash(f'Pozo "{titulo}" eliminado', 'success')
     return redirect(url_for('admin_panel'))
 
+@app.route('/admin/subir_resultados', methods=['GET', 'POST'])
+def subir_resultados():
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        titulo_pozo = request.form.get('titulo_pozo')
+        fecha_pozo = request.form.get('fecha_pozo')
+        csv_contenido = request.form.get('csv_contenido')
+        
+        if not csv_contenido:
+            flash('Debes pegar el contenido del CSV', 'error')
+            return redirect(url_for('subir_resultados'))
+        
+        # Parsear CSV
+        lineas = csv_contenido.strip().split('\n')
+        parejas = []
+        niveles_totales = []
+        
+        for linea in lineas[1:]:  # Saltar cabecera
+            if not linea.strip():
+                continue
+            partes = linea.split(',')
+            if len(partes) >= 4:
+                email1 = partes[0].strip().lower()
+                nivel1 = float(partes[1].strip()) if partes[1].strip() else 0
+                email2 = partes[2].strip().lower()
+                nivel2 = float(partes[3].strip()) if partes[3].strip() else 0
+                posicion = int(partes[4].strip()) if len(partes) > 4 and partes[4].strip() else None
+                
+                media_pareja = (nivel1 + nivel2) / 2
+                niveles_totales.extend([nivel1, nivel2])
+                
+                parejas.append({
+                    'email1': email1,
+                    'nivel1': nivel1,
+                    'email2': email2,
+                    'nivel2': nivel2,
+                    'media_pareja': media_pareja,
+                    'posicion': posicion
+                })
+        
+        # Calcular media del pozo
+        media_pozo = sum(niveles_totales) / len(niveles_totales) if niveles_totales else 0
+        
+        # Crear pozo jugado
+        fecha = datetime.strptime(fecha_pozo, '%Y-%m-%d') if fecha_pozo else datetime.utcnow()
+        pozo_jugado = PozoJugado(
+            titulo=titulo_pozo,
+            fecha=fecha,
+            nivel=media_pozo
+        )
+        db.session.add(pozo_jugado)
+        db.session.commit()
+        
+        # Procesar cada pareja
+        for pareja in parejas:
+            diferencia = pareja['media_pareja'] - media_pozo
+            posicion = pareja['posicion']
+            
+            # Calcular variación según la fórmula
+            if diferencia < -0.3:  # Por debajo de la media
+                variaciones = {1: 0.10, 2: 0.08, 3: 0.06, None: 0}
+            elif diferencia > 0.3:  # Por encima de la media
+                variaciones = {1: 0.04, 2: 0.02, 3: 0.01, None: -0.02}
+            else:  # En la media
+                variaciones = {1: 0.06, 2: 0.04, 3: 0.02, None: -0.01}
+            
+            variacion = variaciones.get(posicion, 0)
+            puntos = {1: 100, 2: 75, 3: 50, None: 10}.get(posicion, 10)
+            
+            # Guardar resultado y actualizar usuarios
+            for email, nivel in [(pareja['email1'], pareja['nivel1']), (pareja['email2'], pareja['nivel2'])]:
+                resultado = Resultado(
+                    pozo_jugado_id=pozo_jugado.id,
+                    email=email,
+                    posicion=posicion,
+                    puntos=puntos
+                )
+                db.session.add(resultado)
+                
+                # Actualizar usuario si existe
+                usuario = Usuario.query.filter_by(email=email).first()
+                if usuario:
+                    usuario.puntos_ranking += puntos
+                    usuario.nivel_playtomic = round(usuario.nivel_playtomic + variacion, 2)
+                    # Limitar nivel entre 0 y 7
+                    usuario.nivel_playtomic = max(0, min(7, usuario.nivel_playtomic))
+        
+        db.session.commit()
+        
+        flash(f'Resultados del pozo "{titulo_pozo}" guardados. Media del pozo: {media_pozo:.2f}', 'success')
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('subir_resultados.html')
+
+
 # Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
