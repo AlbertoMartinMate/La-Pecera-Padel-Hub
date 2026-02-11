@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados - {{ pozo.titulo }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="flex items-center mb-8">
+            <a href="{{ url_for('admin_panel') }}" class="text-gray-400 hover:text-white mr-4">
+                ← Volver
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-white">📊 {{ pozo.titulo }}</h1>
+                <p class="text-gray-400">
+                    {{ pozo.fecha.strftime('%d/%m/%Y') if pozo.fecha else 'Sin fecha' }} 
+                    · Media del pozo: <span class="text-green-400">{{ "%.2f"|format(pozo.nivel) if pozo.nivel else '-' }}</span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Top 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {% for resultado in resultados if resultado.posicion %}
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 text-center
+                {% if resultado.posicion == 1 %}border-yellow-500/50 bg-yellow-500/10{% endif %}
+                {% if resultado.posicion == 2 %}border-gray-400/50 bg-gray-400/10{% endif %}
+                {% if resultado.posicion == 3 %}border-orange-600/50 bg-orange-600/10{% endif %}">
+                <div class="text-4xl mb-2">
+                    {% if resultado.posicion == 1 %}🥇{% endif %}
+                    {% if resultado.posicion == 2 %}🥈{% endif %}
+                    {% if resultado.posicion == 3 %}🥉{% endif %}
+                </div>
+                <p class="text-sm text-gray-400">{{ resultado.posicion }}º Puesto</p>
+                <p class="text-white font-semibold mt-2">{{ resultado.email }}</p>
+                <p class="text-green-400 text-sm">+{{ resultado.puntos }} pts</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Todos los participantes -->
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
+            <div class="p-6 border-b border-dark-border">
+                <h2 class="text-xl font-bold text-gray-100">Todos los Participantes</h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-dark-bg">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Email</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Posición</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-dark-border">
+                        {% for resultado in resultados %}
+                        <tr class="hover:bg-dark-bg/50 transition">
+                            <td class="px-6 py-4 text-gray-100">{{ resultado.email }}</td>
+                            <td class="px-6 py-4">
+                                {% if resultado.posicion %}
+                                <span class="text-xs bg-purple-400/20 text-purple-400 px-2 py-1 rounded-full">
+                                    {{ resultado.posicion }}º
+                                </span>
+                                {% else %}
+                                <span class="text-gray-500">Participante</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-green-400">+{{ resultado.puntos }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

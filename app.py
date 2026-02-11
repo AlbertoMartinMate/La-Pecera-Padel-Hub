@@ -232,8 +232,9 @@ def admin_panel():
     
     usuarios = Usuario.query.order_by(Usuario.fecha_registro.desc()).all()
     pozos = Pozo.query.filter_by(activo=True).order_by(Pozo.fecha).all()
+    pozos_jugados = PozoJugado.query.order_by(PozoJugado.fecha.desc()).all()
     
-    return render_template('admin_new.html', usuarios=usuarios, pozos=pozos)
+    return render_template('admin_new.html', usuarios=usuarios, pozos=pozos, pozos_jugados=pozos_jugados)
 
 @app.route('/admin/toggle_user/<int:user_id>')
 def toggle_user(user_id):
@@ -432,6 +433,18 @@ def subir_resultados():
         return redirect(url_for('admin_panel'))
     
     return render_template('subir_resultados.html')
+
+
+@app.route('/admin/ver_resultados/<int:pozo_id>')
+def ver_resultados(pozo_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+    
+    pozo = PozoJugado.query.get_or_404(pozo_id)
+    resultados = Resultado.query.filter_by(pozo_jugado_id=pozo_id).order_by(Resultado.posicion).all()
+    
+    return render_template('ver_resultados.html', pozo=pozo, resultados=resultados)
 
 
 # Crear las tablas en la base de datos

@@ -263,6 +263,66 @@
             </div>
             {% endif %}
         </div>
+
+                <!-- Pozos Jugados (Historial) -->
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mt-8">
+            <div class="p-6 border-b border-dark-border">
+                <h2 class="text-2xl font-bold text-gray-100">📊 Pozos Jugados (Historial)</h2>
+            </div>
+            
+            {% if pozos_jugados %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-dark-bg">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Título
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Fecha
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Media Nivel
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-dark-border">
+                        {% for pozo in pozos_jugados %}
+                        <tr class="hover:bg-dark-bg/50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-100">{{ pozo.titulo }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                {{ pozo.fecha.strftime('%d/%m/%Y') if pozo.fecha else 'Sin fecha' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-xs text-green-400 bg-green-400/20 px-2 py-1 rounded-full">
+                                    {{ "%.2f"|format(pozo.nivel) if pozo.nivel else '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ url_for('ver_resultados', pozo_id=pozo.id) }}" 
+                                class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-3 py-1 rounded text-sm transition">
+                                    👁️ Ver Resultados
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <span class="text-4xl mb-4 block">📊</span>
+                <p class="text-gray-400">No hay pozos jugados todavía</p>
+            </div>
+            {% endif %}
+        </div>
+
+        
     </main>
 </div>
 {% endblock %}
