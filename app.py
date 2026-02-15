@@ -181,7 +181,22 @@ def dashboard():
         Pozo.nivel_max >= mi_nivel
     ).order_by(Pozo.fecha).limit(3).all()
     
-    return render_template('dashboard_new.html', proximos_pozos=proximos_pozos)
+    # Mi posición en el ranking
+    usuarios_ranking = Usuario.query.order_by(Usuario.puntos_ranking.desc()).all()
+    mi_posicion = None
+    for i, u in enumerate(usuarios_ranking):
+        if u.id == usuario.id:
+            mi_posicion = i + 1
+            break
+    
+    # Top 5 ranking
+    top_ranking = usuarios_ranking[:5]
+    
+    return render_template('dashboard_new.html', 
+                           proximos_pozos=proximos_pozos, 
+                           usuario=usuario,
+                           mi_posicion=mi_posicion,
+                           top_ranking=top_ranking)
 
 
 @app.route('/pozos')
