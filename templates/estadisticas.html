@@ -3,13 +3,51 @@
 {% block title %}Estadísticas - La Pecera Padel Hub{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center text-white mb-8">📊 Estadísticas</h1>
-    
-    <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
-        <span class="text-6xl mb-4 block">🚧</span>
-        <h2 class="text-xl font-semibold text-gray-300 mb-2">Próximamente</h2>
-        <p class="text-gray-500">Aquí verás tus gráficos y estadísticas</p>
-    </div>
-</div>
-{% endblock %}
+<div class="min-h-screen">
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-white mb-2">📊 Mis Estadísticas</h1>
+        <p class="text-center text-gray-400 mb-8">{{ usuario.nombre }}</p>
+        
+        {% if stats.total_pozos > 0 %}
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 text-center">
+                <p class="text-3xl font-bold text-white">{{ stats.total_pozos }}</p>
+                <p class="text-sm text-gray-400">Pozos Jugados</p>
+            </div>
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 text-center">
+                <p class="text-3xl font-bold text-green-400">{{ stats.puntos_totales }}</p>
+                <p class="text-sm text-gray-400">Puntos Totales</p>
+            </div>
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 text-center">
+                <p class="text-3xl font-bold text-secondary">{{ stats.nivel_actual }}</p>
+                <p class="text-sm text-gray-400">Nivel Actual</p>
+            </div>
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 text-center">
+                <p class="text-3xl font-bold text-yellow-400">{{ stats.primeros }}</p>
+                <p class="text-sm text-gray-400">Victorias 🥇</p>
+            </div>
+        </div>
+        
+        <!-- Gráfico Circular de Posiciones -->
+        <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-8">
+            <h2 class="text-xl font-bold text-white mb-6 text-center">Distribución de Resultados</h2>
+            
+            <div class="flex justify-center mb-6">
+                <canvas id="posicionesChart" width="300" height="300"></canvas>
+            </div>
+            
+            <!-- Leyenda -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <span class="text-white">1º Puesto</span>
+                    </div>
+                    <p class="text-2xl font-bold text-yellow-400">{{ stats.primeros }}</p>
+                    <p class="text-sm text-gray-400">{{ stats.pct_primeros }}%</p>
+                </div>
+                <div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="w-4 

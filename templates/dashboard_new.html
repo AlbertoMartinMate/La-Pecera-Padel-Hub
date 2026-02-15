@@ -11,7 +11,7 @@
             <h1 class="text-4xl font-bold text-gray-100 mb-2">
                 ¡Hola, {{ session.user_name }}! 👋
             </h1>
-            <p class="text-gray-400">Bienvenido a tu panel de La Pecera Padel Hub</p>
+            <p class="text-gray-400">Bienvenido a tu panel de La Pecera Padel Club</p>
         </div>
 
                 <!-- Top Stats Section -->
@@ -50,7 +50,7 @@
             <!-- Top 5 Ranking -->
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-purple-500 transition">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-100">Top 5 Ranking</h3>
+                    <a href="{{ url_for('ranking') }}" class="text-lg font-semibold text-gray-100 hover:text-purple-400 transition">Top 5 Ranking →</a>
                     <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                         <span class="text-xl">📊</span>
                     </div>
@@ -71,7 +71,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- News/Announcements Section -->
         <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
             <div class="flex items-center justify-between mb-6">

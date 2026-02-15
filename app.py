@@ -221,7 +221,34 @@ def estadisticas():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    return render_template('estadisticas.html')
+    usuario = Usuario.query.get(session['user_id'])
+    
+    # Buscar resultados del usuario
+    resultados = Resultado.query.filter_by(email=usuario.email).all()
+    
+    # Contar posiciones
+    total_pozos = len(resultados)
+    primeros = sum(1 for r in resultados if r.posicion == 1)
+    segundos = sum(1 for r in resultados if r.posicion == 2)
+    terceros = sum(1 for r in resultados if r.posicion == 3)
+    participaciones = sum(1 for r in resultados if r.posicion is None)
+    
+    # Calcular porcentajes
+    stats = {
+        'total_pozos': total_pozos,
+        'primeros': primeros,
+        'segundos': segundos,
+        'terceros': terceros,
+        'participaciones': participaciones,
+        'puntos_totales': usuario.puntos_ranking,
+        'nivel_actual': usuario.nivel_playtomic,
+        'pct_primeros': round((primeros / total_pozos * 100), 1) if total_pozos > 0 else 0,
+        'pct_segundos': round((segundos / total_pozos * 100), 1) if total_pozos > 0 else 0,
+        'pct_terceros': round((terceros / total_pozos * 100), 1) if total_pozos > 0 else 0,
+        'pct_participaciones': round((participaciones / total_pozos * 100), 1) if total_pozos > 0 else 0,
+    }
+    
+    return render_template('estadisticas.html', stats=stats, usuario=usuario)
 
 @app.route('/ranking')
 def ranking():
