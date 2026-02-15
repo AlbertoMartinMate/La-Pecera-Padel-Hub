@@ -102,6 +102,20 @@ class Resultado(db.Model):
     def __repr__(self):
         return f'<Resultado {self.email} - Pos {self.posicion}>'
 
+# Modelo de Historial de Nivel
+class HistorialNivel(db.Model):
+    __tablename__ = 'historial_nivel'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    nivel_anterior = db.Column(db.Float, nullable=False)
+    nivel_nuevo = db.Column(db.Float, nullable=False)
+    pozo_jugado_id = db.Column(db.Integer, db.ForeignKey('pozos_jugados.id'), nullable=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<HistorialNivel {self.usuario_id}: {self.nivel_anterior} -> {self.nivel_nuevo}>'
+
 # Rutas
 
 # Rutas
@@ -265,8 +279,11 @@ def estadisticas():
         'pct_participaciones': round((participaciones / total_pozos * 100), 1) if total_pozos > 0 else 0,
     }
     
-    return render_template('estadisticas.html', stats=stats, usuario=usuario)
-
+    # Historial de nivel (últimos 20)
+    historial = HistorialNivel.query.filter_by(usuario_id=usuario.id).order_by(HistorialNivel.fecha.desc()).limit(20).all()
+    historial.reverse()  # Para que vaya de más antiguo a más reciente
+    
+    return render_template('estadisticas.html', stats=stats, usuario=usuario, historial=historial)
 @app.route('/ranking')
 def ranking():
     if 'user_id' not in session:
@@ -481,13 +498,24 @@ def subir_resultados():
                 )
                 db.session.add(resultado)
                 
-                # Actualizar usuario si existe
+               # Actualizar usuario si existe
                 usuario = Usuario.query.filter_by(email=email).first()
                 if usuario:
+                    nivel_anterior = usuario.nivel_playtomic
                     usuario.puntos_ranking += puntos
                     usuario.nivel_playtomic = round(usuario.nivel_playtomic + variacion, 2)
                     # Limitar nivel entre 0 y 7
                     usuario.nivel_playtomic = max(0, min(7, usuario.nivel_playtomic))
+    
+    # Guardar historial de nivel
+    if variacion != 0:
+        historial = HistorialNivel(
+            usuario_id=usuario.id,
+            nivel_anterior=nivel_anterior,
+            nivel_nuevo=usuario.nivel_playtomic,
+            pozo_jugado_id=pozo_jugado.id
+        )
+        db.session.add(historial)
         
         db.session.commit()
         
@@ -585,6 +613,16 @@ with app.app_context():
             print("✅ Tabla resultados ya existe")
     except Exception as e:
         print(f"Migración Resultados: {e}")
+
+        # Crear tabla historial_nivel si no existe
+    try:
+        if 'historial_nivel' not in inspector.get_table_names():
+            HistorialNivel.__table__.create(db.engine)
+            print("✅ Tabla historial_nivel creada")
+        else:
+            print("✅ Tabla historial_nivel ya existe")
+    except Exception as e:
+        print(f"Migración HistorialNivel: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
