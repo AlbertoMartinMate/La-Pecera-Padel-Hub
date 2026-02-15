@@ -192,11 +192,28 @@ def dashboard():
     # Top 5 ranking
     top_ranking = usuarios_ranking[:5]
     
+    # Estadísticas del usuario
+    resultados = Resultado.query.filter_by(email=usuario.email).all()
+    total_pozos = len(resultados)
+    primeros = sum(1 for r in resultados if r.posicion == 1)
+    segundos = sum(1 for r in resultados if r.posicion == 2)
+    terceros = sum(1 for r in resultados if r.posicion == 3)
+    participaciones = sum(1 for r in resultados if r.posicion is None)
+    
+    stats = {
+        'total_pozos': total_pozos,
+        'primeros': primeros,
+        'segundos': segundos,
+        'terceros': terceros,
+        'participaciones': participaciones
+    }
+    
     return render_template('dashboard_new.html', 
                            proximos_pozos=proximos_pozos, 
                            usuario=usuario,
                            mi_posicion=mi_posicion,
-                           top_ranking=top_ranking)
+                           top_ranking=top_ranking,
+                           stats=stats)
 
 
 @app.route('/pozos')

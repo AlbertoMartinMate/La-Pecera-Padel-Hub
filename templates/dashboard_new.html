@@ -15,7 +15,7 @@
         </div>
 
                 <!-- Top Stats Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <!-- Mi Ranking -->
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-accent transition">
                 <div class="flex items-center justify-between mb-4">
@@ -70,6 +70,28 @@
                     {% endif %}
                 </div>
             </div>
+
+                <!-- Mini Gráfico Estadísticas -->
+            <a href="{{ url_for('estadisticas') }}" class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-pink-500 transition block">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-100">Mis Resultados</h3>
+                    <div class="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                        <span class="text-xl">📊</span>
+                    </div>
+                </div>
+                {% if stats.total_pozos > 0 %}
+                <div class="flex justify-center">
+                    <div class="w-24 h-24">
+                        <canvas id="miniChart"></canvas>
+                    </div>
+                </div>
+                <p class="text-center text-gray-400 text-sm mt-2">Ver estadísticas →</p>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-gray-500 text-sm">Sin datos aún</p>
+                </div>
+                {% endif %}
+            </a>
         </div>
 
         <!-- News/Announcements Section -->
@@ -130,4 +152,28 @@
         </div>
     </main>
 </div>
+
+<!-- Mini Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% if stats.total_pozos > 0 %}
+const miniCtx = document.getElementById('miniChart').getContext('2d');
+new Chart(miniCtx, {
+    type: 'doughnut',
+    data: {
+        datasets: [{
+            data: [{{ stats.primeros }}, {{ stats.segundos }}, {{ stats.terceros }}, {{ stats.participaciones }}],
+            backgroundColor: ['#facc15', '#9ca3af', '#f97316', '#a855f7'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
+        cutout: '50%'
+    }
+});
+{% endif %}
+</script>
 {% endblock %}
