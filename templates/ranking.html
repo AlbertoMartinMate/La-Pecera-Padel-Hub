@@ -3,13 +3,58 @@
 {% block title %}Ranking - La Pecera Padel Hub{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center text-white mb-8">🏆 Ranking</h1>
-    
-    <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
-        <span class="text-6xl mb-4 block">🚧</span>
-        <h2 class="text-xl font-semibold text-gray-300 mb-2">Próximamente</h2>
-        <p class="text-gray-500">Aquí verás el ranking del club</p>
-    </div>
+<div class="min-h-screen">
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-white mb-2">🏆 Ranking del Club</h1>
+        <p class="text-center text-gray-400 mb-8">Clasificación por puntos acumulados</p>
+        
+        {% if usuarios %}
+        <div class="space-y-4">
+            {% for usuario in usuarios %}
+            <div class="bg-dark-card border border-dark-border rounded-xl p-4 flex items-center justify-between
+                {% if loop.index == 1 %}border-yellow-500/50 bg-yellow-500/10{% endif %}
+                {% if loop.index == 2 %}border-gray-400/50 bg-gray-400/10{% endif %}
+                {% if loop.index == 3 %}border-orange-600/50 bg-orange-600/10{% endif %}">
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Posición -->
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full
+                        {% if loop.index == 1 %}bg-yellow-500 text-dark-bg{% endif %}
+                        {% if loop.index == 2 %}bg-gray-400 text-dark-bg{% endif %}
+                        {% if loop.index == 3 %}bg-orange-600 text-white{% endif %}
+                        {% if loop.index > 3 %}bg-dark-bg text-gray-400{% endif %}">
+                        <span class="font-bold text-lg">{{ loop.index }}</span>
+                    </div>
+                    
+                    <!-- Avatar e info -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center">
+                            <span class="text-lg font-bold text-dark-bg">
+                                {{ usuario.nombre[0].upper() }}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">{{ usuario.nombre }}</p>
+                            <p class="text-sm text-gray-400">Nivel {{ usuario.nivel_playtomic }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Puntos -->
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-green-400">{{ usuario.puntos_ranking }}</p>
+                    <p class="text-xs text-gray-400">puntos</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
+            <span class="text-6xl mb-4 block">🏆</span>
+            <h2 class="text-xl font-semibold text-gray-300 mb-2">No hay ranking todavía</h2>
+            <p class="text-gray-500">Participa en pozos para aparecer aquí</p>
+        </div>
+        {% endif %}
+    </main>
 </div>
 {% endblock %}

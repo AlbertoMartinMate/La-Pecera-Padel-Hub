@@ -213,7 +213,10 @@ def ranking():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    return render_template('ranking.html')
+    # Ordenar usuarios por puntos (mayor a menor)
+    usuarios = Usuario.query.order_by(Usuario.puntos_ranking.desc()).all()
+    
+    return render_template('ranking.html', usuarios=usuarios)
 
 @app.route('/logout')
 def logout():
@@ -407,7 +410,7 @@ def subir_resultados():
                 variaciones = {1: 0.06, 2: 0.04, 3: 0.02, None: -0.01}
             
             variacion = variaciones.get(posicion, 0)
-            puntos = {1: 100, 2: 75, 3: 50, None: 10}.get(posicion, 10)
+            puntos = {1: 10, 2: 6, 3: 4, None: 2}.get(posicion, 2)
             
             # Guardar resultado y actualizar usuarios
             for email, nivel in [(pareja['email1'], pareja['nivel1']), (pareja['email2'], pareja['nivel2'])]:
