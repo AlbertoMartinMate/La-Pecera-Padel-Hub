@@ -243,7 +243,38 @@ def pozos():
         Pozo.nivel_max >= mi_nivel
     ).order_by(Pozo.fecha).all()
 
-    return render_template('pozos.html', pozos=pozos, mi_nivel=mi_nivel)
+    # Historial de pozos jugados del usuario
+    historial_raw = db.session.query(Resultado, PozoJugado)\
+        .join(PozoJugado, Resultado.pozo_jugado_id == PozoJugado.id)\
+        .filter(Resultado.email == usuario.email)\
+        .order_by(PozoJugado.fecha.desc()).all()
+
+    # Construir lista con puntos acumulados y variación de nivel
+    pozos_jugados = []
+    puntos_acum = usuario.puntos_ranking  # empezamos desde el total actual y restamos hacia atrás
+    for resultado, pozo in historial_raw:
+        puntos_acum_display = puntos_acum
+        # Buscar variación de nivel en historial_nivel para este pozo
+        hist_nivel = HistorialNivel.query.filter_by(
+            usuario_id=usuario.id,
+            pozo_jugado_id=pozo.id
+        ).first()
+
+        variacion = round(hist_nivel.nivel_nuevo - hist_nivel.nivel_anterior, 2) if hist_nivel else 0
+        nivel_nuevo = hist_nivel.nivel_nuevo if hist_nivel else usuario.nivel_playtomic
+
+        pozos_jugados.append({
+            'titulo': pozo.titulo,
+            'fecha': pozo.fecha.strftime('%d/%m/%Y') if pozo.fecha else '-',
+            'posicion': resultado.posicion,
+            'puntos': resultado.puntos,
+            'puntos_acumulados': puntos_acum_display,
+            'variacion_nivel': variacion,
+            'nivel_nuevo': nivel_nuevo
+        })
+        puntos_acum -= resultado.puntos  # restamos para reconstruir hacia atrás
+
+    return render_template('pozos.html', pozos=pozos, mi_nivel=mi_nivel, pozos_jugados=pozos_jugados)
 
 
 @app.route('/estadisticas')

@@ -14,10 +14,11 @@
             <p class="text-gray-400">Bienvenido a tu panel de La Pecera Padel Club</p>
         </div>
 
-                <!-- Top Stats Section -->
+        <!-- Top Stats Section -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <!-- Mi Ranking -->
-            <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-accent transition">
+
+            <!-- Mi Ranking → enlaza a /ranking -->
+            <a href="{{ url_for('ranking') }}" class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-accent transition block">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-100">Mi Ranking</h3>
                     <div class="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
@@ -31,10 +32,10 @@
                     <p class="text-sm text-gray-400">Posición en el club</p>
                     <p class="text-green-400 font-semibold mt-2">{{ usuario.puntos_ranking }} pts</p>
                 </div>
-            </div>
+            </a>
 
-            <!-- Mi Nivel -->
-            <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-secondary transition">
+            <!-- Mi Nivel → enlaza a /estadisticas#nivelChart -->
+            <a href="{{ url_for('estadisticas') }}#nivelChart" class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-secondary transition block">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-100">Mi Nivel</h3>
                     <div class="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">
@@ -44,8 +45,9 @@
                 <div class="text-center">
                     <div class="text-4xl font-bold text-secondary mb-1">{{ usuario.nivel_playtomic }}</div>
                     <p class="text-sm text-gray-400">Nivel actual</p>
+                    <p class="text-xs text-gray-500 mt-2">Ver evolución →</p>
                 </div>
-            </div>
+            </a>
 
             <!-- Top 5 Ranking -->
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-purple-500 transition">
@@ -60,7 +62,9 @@
                     <div class="flex justify-between items-center text-sm">
                         <div class="flex items-center space-x-2">
                             <span class="text-gray-400">{{ loop.index }}.</span>
-                            <span class="text-white">{{ u.nombre }}</span>
+                            <span class="{% if u.id == usuario.id %}text-secondary font-bold{% else %}text-white{% endif %}">
+                                {{ u.nombre }}
+                            </span>
                         </div>
                         <span class="text-green-400">{{ u.puntos_ranking }} pts</span>
                     </div>
@@ -71,7 +75,7 @@
                 </div>
             </div>
 
-                <!-- Mini Gráfico Estadísticas -->
+            <!-- Mini Gráfico Estadísticas -->
             <a href="{{ url_for('estadisticas') }}" class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-pink-500 transition block">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-100">Mis Resultados</h3>
@@ -99,7 +103,6 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-100">📢 Noticias del Club</h2>
             </div>
-            
             <div class="text-center py-12">
                 <div class="w-20 h-20 bg-dark-bg rounded-full flex items-center justify-center mx-auto mb-4">
                     <span class="text-4xl opacity-50">📰</span>
@@ -109,7 +112,7 @@
             </div>
         </div>
 
-        <!-- Próximos Eventos/Pozos -->
+        <!-- Próximos Pozos -->
         <div class="bg-dark-card border border-dark-border rounded-xl p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-100">🎯 Próximos Pozos</h2>
@@ -117,37 +120,37 @@
                     Ver todos →
                 </a>
             </div>
-            
+
             {% if proximos_pozos %}
-                <div class="space-y-4">
-                    {% for pozo in proximos_pozos %}
-                    <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-secondary transition">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-gray-100">{{ pozo.titulo }}</h3>
-                                <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full">
-                                    Nivel {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
-                                </span>
-                                {% if pozo.fecha %}
-                                <p class="text-gray-400 text-sm mt-2">📅 {{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
-                                {% endif %}
-                            </div>
-                            <a href="{{ pozo.enlace }}" target="_blank" 
-                               class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition-transform">
-                                Inscribirse
-                            </a>
+            <div class="space-y-4">
+                {% for pozo in proximos_pozos %}
+                <div class="bg-dark-bg border border-dark-border rounded-lg p-4 hover:border-secondary transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-semibold text-gray-100">{{ pozo.titulo }}</h3>
+                            <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full">
+                                Nivel {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
+                            </span>
+                            {% if pozo.fecha %}
+                            <p class="text-gray-400 text-sm mt-2">📅 {{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                            {% endif %}
                         </div>
+                        <a href="{{ pozo.enlace }}" target="_blank"
+                           class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition-transform">
+                            Inscribirse
+                        </a>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="text-center py-12">
-                    <div class="w-20 h-20 bg-dark-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-4xl opacity-50">📅</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-300 mb-2">No hay pozos próximos</h3>
-                    <p class="text-gray-500">Los próximos eventos de tu nivel aparecerán aquí</p>
+            <div class="text-center py-12">
+                <div class="w-20 h-20 bg-dark-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-4xl opacity-50">📅</span>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-300 mb-2">No hay pozos próximos</h3>
+                <p class="text-gray-500">Los próximos eventos de tu nivel aparecerán aquí</p>
+            </div>
             {% endif %}
         </div>
     </main>
