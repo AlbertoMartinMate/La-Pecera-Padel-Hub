@@ -7,9 +7,9 @@
     <main class="max-w-4xl mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center text-white mb-2">📊 Mis Estadísticas</h1>
         <p class="text-center text-gray-400 mb-8">{{ usuario.nombre }}</p>
-        
+
         {% if stats.total_pozos > 0 %}
-        
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-dark-card border border-dark-border rounded-xl p-4 text-center">
@@ -29,17 +29,17 @@
                 <p class="text-sm text-gray-400">Victorias 🥇</p>
             </div>
         </div>
-        
+
         <!-- Gráfico Circular de Posiciones -->
         <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-8">
             <h2 class="text-xl font-bold text-white mb-6 text-center">Distribución de Resultados</h2>
-            
+
             <div class="flex justify-center mb-6">
                 <div class="w-64 h-64">
                     <canvas id="posicionesChart"></canvas>
                 </div>
             </div>
-            
+
             <!-- Leyenda -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
@@ -76,5 +76,99 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Gráfico Evolución 
+
+        <!-- Gráfico Evolución de Nivel -->
+        <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-8">
+            <h2 class="text-xl font-bold text-white mb-6 text-center">📈 Evolución del Nivel</h2>
+
+            {% if historial %}
+            <div class="h-64">
+                <canvas id="nivelChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-400">Aún no hay historial de cambios de nivel.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <!-- Sin datos -->
+        <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
+            <div class="text-6xl mb-4">🎱</div>
+            <h2 class="text-2xl font-bold text-white mb-2">Sin estadísticas todavía</h2>
+            <p class="text-gray-400">Participa en pozos para ver tus estadísticas aquí.</p>
+            <a href="{{ url_for('pozos') }}" class="inline-block mt-6 bg-secondary text-dark-bg font-bold px-6 py-3 rounded-lg hover:opacity-90 transition">
+                Ver Pozos Disponibles
+            </a>
+        </div>
+        {% endif %}
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% if stats.total_pozos > 0 %}
+// Gráfico circular de posiciones
+const posCtx = document.getElementById('posicionesChart').getContext('2d');
+new Chart(posCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['1º Puesto', '2º Puesto', '3º Puesto', 'Participación'],
+        datasets: [{
+            data: [{{ stats.primeros }}, {{ stats.segundos }}, {{ stats.terceros }}, {{ stats.participaciones }}],
+            backgroundColor: ['#facc15', '#9ca3af', '#f97316', '#a855f7'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { display: false }
+        },
+        cutout: '60%'
+    }
+});
+{% endif %}
+
+{% if historial %}
+// Gráfico evolución de nivel
+const nivelCtx = document.getElementById('nivelChart').getContext('2d');
+new Chart(nivelCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for h in historial %}"{{ h.fecha.strftime('%d/%m') }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Nivel',
+            data: [{% for h in historial %}{{ h.nivel_nuevo }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#10b981',
+            pointRadius: 5,
+            pointHoverRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: {
+                grid: { color: '#1e293b' },
+                ticks: { color: '#94a3b8', stepSize: 0.5 },
+                min: 0,
+                max: 7
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}
