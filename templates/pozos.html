@@ -40,55 +40,56 @@
 
         {% if pozos_jugados %}
 
-        <!-- Tabla -->
+        <!-- Scroll lateral habilitado en móvil -->
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-            <table class="w-full text-sm">
-                <thead class="bg-dark-bg">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Pozo</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Fecha</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Posición</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Puntos</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Pts Totales</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Nivel</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-dark-border" id="tabla-pozos">
-                    {% for item in pozos_jugados %}
-                    <tr class="hover:bg-dark-bg/50 transition {% if loop.index > 5 %}fila-extra hidden{% endif %}">
-                        <td class="px-4 py-3 text-white font-medium">{{ item.titulo }}</td>
-                        <td class="px-4 py-3 text-gray-400 text-center">{{ item.fecha }}</td>
-                        <td class="px-4 py-3 text-center">
-                            {% if item.posicion == 1 %}
-                                <span class="text-yellow-400 font-bold">🥇 1º</span>
-                            {% elif item.posicion == 2 %}
-                                <span class="text-gray-300 font-bold">🥈 2º</span>
-                            {% elif item.posicion == 3 %}
-                                <span class="text-orange-400 font-bold">🥉 3º</span>
-                            {% else %}
-                                <span class="text-purple-400">Participación</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="text-green-400 font-bold">+{{ item.puntos }}</span>
-                        </td>
-                        <td class="px-4 py-3 text-center text-gray-300">{{ item.puntos_acumulados }}</td>
-                        <td class="px-4 py-3 text-center">
-                            {% if item.variacion_nivel > 0 %}
-                                <span class="text-green-400 font-semibold">{{ item.nivel_nuevo }} <span class="text-xs">(+{{ item.variacion_nivel }})</span></span>
-                            {% elif item.variacion_nivel < 0 %}
-                                <span class="text-red-400 font-semibold">{{ item.nivel_nuevo }} <span class="text-xs">({{ item.variacion_nivel }})</span></span>
-                            {% else %}
-                                <span class="text-gray-400">{{ item.nivel_nuevo }} <span class="text-xs">(=)</span></span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
+                <table class="w-full text-xs md:text-sm min-w-[500px]">
+                    <thead class="bg-dark-bg">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Pozo</th>
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Fecha</th>
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Pos.</th>
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Pts</th>
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Total</th>
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Nivel</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-dark-border">
+                        {% for item in pozos_jugados %}
+                        <tr class="hover:bg-dark-bg/50 transition {% if loop.index > 5 %}fila-extra hidden{% endif %}">
+                            <td class="px-3 py-2 text-white font-medium max-w-[120px] truncate">{{ item.titulo }}</td>
+                            <td class="px-3 py-2 text-gray-400 text-center whitespace-nowrap">{{ item.fecha }}</td>
+                            <td class="px-3 py-2 text-center whitespace-nowrap">
+                                {% if item.posicion == 1 %}
+                                    <span class="text-yellow-400 font-bold">🥇</span>
+                                {% elif item.posicion == 2 %}
+                                    <span class="text-gray-300 font-bold">🥈</span>
+                                {% elif item.posicion == 3 %}
+                                    <span class="text-orange-400 font-bold">🥉</span>
+                                {% else %}
+                                    <span class="text-purple-400 text-xs">Part.</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2 text-center">
+                                <span class="text-green-400 font-bold">+{{ item.puntos }}</span>
+                            </td>
+                            <td class="px-3 py-2 text-center text-gray-300">{{ item.puntos_acumulados }}</td>
+                            <td class="px-3 py-2 text-center whitespace-nowrap">
+                                {% if item.variacion_nivel > 0 %}
+                                    <span class="text-green-400 font-semibold">{{ item.nivel_nuevo }} <span class="text-xs">(+{{ item.variacion_nivel }})</span></span>
+                                {% elif item.variacion_nivel < 0 %}
+                                    <span class="text-red-400 font-semibold">{{ item.nivel_nuevo }} <span class="text-xs">({{ item.variacion_nivel }})</span></span>
+                                {% else %}
+                                    <span class="text-gray-400">{{ item.nivel_nuevo }} <span class="text-xs">(=)</span></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Botón expandir -->
         {% if pozos_jugados|length > 5 %}
         <div class="text-center mt-4">
             <button id="btn-expandir" onclick="expandirPozos()"
@@ -111,14 +112,8 @@ function expandirPozos() {
     const filas = document.querySelectorAll('.fila-extra');
     const btn = document.getElementById('btn-expandir');
     const ocultas = [...filas].some(f => f.classList.contains('hidden'));
-
     filas.forEach(f => f.classList.toggle('hidden'));
-
-    if (ocultas) {
-        btn.textContent = 'Mostrar menos ▲';
-    } else {
-        btn.textContent = 'Ver todos ({{ pozos_jugados|length }}) ▼';
-    }
+    btn.textContent = ocultas ? 'Mostrar menos ▲' : 'Ver todos ({{ pozos_jugados|length }}) ▼';
 }
 </script>
 {% endblock %}
