@@ -230,18 +230,11 @@ new Chart(u10Ctx, {
     }
 });
 
-// ── Gráfico 4: Puntos acumulados (line) ────────────────────────────────────
+// ── Gráfico 4: Puntos obtenidos por pozo (barras + media) ──────────────────
 const puntosLabels = [{% for resultado, pozo in ultimos_pozos %}"{{ pozo.fecha.strftime('%d/%m') }}"{% if not loop.last %}, {% endif %}{% endfor %}];
-
-// Puntos por pozo (no acumulados) para barras
-const puntosWrapper = document.getElementById('puntosChartWrapper');
-if (numPuntos > 8) puntosWrapper.style.width = (numPuntos * 60) + 'px';
-
-// Puntos por pozo (no acumulados) para barras
 const puntosPorPozo = [{% for resultado, pozo in ultimos_pozos %}{{ resultado.puntos }}{% if not loop.last %}, {% endif %}{% endfor %}];
 const media = puntosPorPozo.reduce((a, b) => a + b, 0) / puntosPorPozo.length;
 const mediaArr = puntosPorPozo.map(() => parseFloat(media.toFixed(1)));
-
 const numPuntos = puntosLabels.length;
 const puntosWrapper = document.getElementById('puntosChartWrapper');
 if (numPuntos > 8) puntosWrapper.style.width = (numPuntos * 60) + 'px';
