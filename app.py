@@ -607,6 +607,63 @@ def ver_resultados(pozo_id):
 
     return render_template('ver_resultados.html', pozo=pozo, resultados=resultados)
 
+@app.route('/admin/editar_pozo_jugado/<int:pozo_id>', methods=['GET', 'POST'])
+def editar_pozo_jugado(pozo_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+
+    pozo = PozoJugado.query.get_or_404(pozo_id)
+    resultados = Resultado.query.filter_by(pozo_jugado_id=pozo_id).all()
+
+    if request.method == 'POST':
+        pozo.titulo = request.form.get('titulo')
+        fecha_str = request.form.get('fecha')
+        if fecha_str:
+            pozo.fecha = datetime.strptime(fecha_str, '%Y-%m-%d')
+        nivel_str = request.form.get('nivel')
+        pozo.nivel = float(nivel_str) if nivel_str else pozo.nivel
+        db.session.commit()
+        flash(f'Pozo "{pozo.titulo}" actualizado correctamente', 'success')
+        return redirect(url_for('admin_panel'))
+
+    return render_template('editar_pozo_jugado.html', pozo=pozo, resultados=resultados)
+
+
+@app.route('/admin/borrar_pozo_jugado/<int:pozo_id>')
+def borrar_pozo_jugado(pozo_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash('No tienes permisos de administrador', 'error')
+        return redirect(url_for('login'))
+
+    pozo = PozoJugado.query.get_or_404(pozo_id)
+    resultados = Resultado.query.filter_by(pozo_jugado_id=pozo_id).all()
+
+    for resultado in resultados:
+        usuario = Usuario.query.filter_by(email=resultado.email).first()
+        if usuario:
+            usuario.puntos_ranking = max(0, usuario.puntos_ranking - resultado.puntos)
+            hist_nivel = HistorialNivel.query.filter_by(
+                usuario_id=usuario.id,
+                pozo_jugado_id=pozo_id
+            ).first()
+            if hist_nivel:
+                usuario.nivel_playtomic = round(hist_nivel.nivel_anterior, 2)
+                db.session.delete(hist_nivel)
+            hist_rank = HistorialRanking.query.filter_by(
+                usuario_id=usuario.id,
+                pozo_jugado_id=pozo_id
+            ).first()
+            if hist_rank:
+                db.session.delete(hist_rank)
+        db.session.delete(resultado)
+
+    titulo = pozo.titulo
+    db.session.delete(pozo)
+    db.session.commit()
+
+    flash(f'Pozo "{titulo}" eliminado y puntos/nivel revertidos correctamente', 'success')
+    return redirect(url_for('admin_panel'))
 
 # ── INICIALIZACIÓN Y MIGRACIONES ─────────────────────────────────────────────
 

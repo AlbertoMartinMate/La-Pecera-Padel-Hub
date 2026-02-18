@@ -4,19 +4,14 @@
 
 {% block content %}
 <div class="min-h-screen">
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-100 mb-2">
-                ⚙️ Panel de Administrador
-            </h1>
+            <h1 class="text-4xl font-bold text-gray-100 mb-2">⚙️ Panel de Administrador</h1>
             <p class="text-gray-400">Gestión del club de pádel</p>
         </div>
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <!-- Total Users -->
             <div class="bg-gradient-to-br from-secondary/20 to-secondary/5 border border-secondary/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center">
@@ -26,8 +21,6 @@
                 <h3 class="text-3xl font-bold text-gray-100 mb-1">{{ usuarios|length }}</h3>
                 <p class="text-gray-400 text-sm">Usuarios Totales</p>
             </div>
-
-            <!-- Admins -->
             <div class="bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
@@ -37,8 +30,6 @@
                 <h3 class="text-3xl font-bold text-gray-100 mb-1">{{ usuarios|selectattr('es_admin')|list|length }}</h3>
                 <p class="text-gray-400 text-sm">Administradores</p>
             </div>
-
-            <!-- Activities -->
             <div class="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
@@ -48,8 +39,6 @@
                 <h3 class="text-3xl font-bold text-gray-100 mb-1">{{ pozos|length }}</h3>
                 <p class="text-gray-400 text-sm">Pozos Creados</p>
             </div>
-
-            <!-- News -->
             <div class="bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
@@ -67,22 +56,16 @@
                 <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition">
                     <span class="text-2xl">📢</span>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-secondary transition">
-                    Publicar Noticia
-                </h3>
+                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-secondary transition">Publicar Noticia</h3>
                 <p class="text-sm text-gray-400">Crear nuevo anuncio para el club</p>
-                <span class="inline-block mt-3 text-xs font-semibold text-secondary bg-secondary/20 px-3 py-1 rounded-full">
-                    Próximamente
-                </span>
+                <span class="inline-block mt-3 text-xs font-semibold text-secondary bg-secondary/20 px-3 py-1 rounded-full">Próximamente</span>
             </button>
 
             <a href="{{ url_for('crear_pozo') }}" class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-accent transition text-left group block">
                 <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-accent/30 transition">
                     <span class="text-2xl">🏆</span>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-accent transition">
-                    Crear Pozo
-                </h3>
+                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-accent transition">Crear Pozo</h3>
                 <p class="text-sm text-gray-400">Registrar nueva actividad o torneo</p>
             </a>
 
@@ -90,98 +73,55 @@
                 <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500/30 transition">
                     <span class="text-2xl">📊</span>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-green-500 transition">
-                    Subir Resultados
-                </h3>
+                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-green-500 transition">Subir Resultados</h3>
                 <p class="text-sm text-gray-400">Cargar CSV con resultados de pozo jugado</p>
             </a>
-
-            <button class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-primary transition text-left group">
-                <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/30 transition">
-                    <span class="text-2xl">📊</span>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-100 mb-2 group-hover:text-primary transition">
-                    Ver Reportes
-                </h3>
-                <p class="text-sm text-gray-400">Estadísticas generales del club</p>
-                <span class="inline-block mt-3 text-xs font-semibold text-primary bg-primary/20 px-3 py-1 rounded-full">
-                    Próximamente
-                </span>
-            </button>
         </div>
 
-        <!-- Users Table -->
-        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
+        <!-- Usuarios -->
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mb-8">
             <div class="p-6 border-b border-dark-border">
                 <h2 class="text-2xl font-bold text-gray-100">Usuarios Registrados</h2>
             </div>
-            
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-dark-bg">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Usuario
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Nivel
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Rol
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Registro
-                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Usuario</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Email</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Nivel</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Rol</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Registro</th>
                         </tr>
                     </thead>
-                    
                     <tbody class="divide-y divide-dark-border">
                         {% for usuario in usuarios %}
                         <tr class="hover:bg-dark-bg/50 transition">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center mr-3">
-                                        <span class="text-lg font-bold text-dark-bg">
-                                            {{ usuario.nombre[0].upper() }}
-                                        </span>
+                                        <span class="text-lg font-bold text-dark-bg">{{ usuario.nombre[0].upper() }}</span>
                                     </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-100">
-                                            {{ usuario.nombre }}
-                                        </div>
-                                    </div>
+                                    <div class="text-sm font-medium text-gray-100">{{ usuario.nombre }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-400">{{ usuario.email }}</div>
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ usuario.email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <form action="{{ url_for('actualizar_nivel', user_id=usuario.id) }}" method="POST" class="flex items-center space-x-2">
-                                    <input type="number" name="nivel" value="{{ usuario.nivel_playtomic }}" 
+                                    <input type="number" name="nivel" value="{{ usuario.nivel_playtomic }}"
                                         min="0" max="7" step="0.5"
                                         class="w-16 bg-dark-bg border border-dark-border rounded px-2 py-1 text-sm text-gray-100 focus:border-secondary focus:outline-none">
-                                    <button type="submit" class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-2 py-1 rounded text-xs transition">
-                                        ✓
-                                    </button>
+                                    <button type="submit" class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-2 py-1 rounded text-xs transition">✓</button>
                                 </form>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if usuario.es_admin %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent/20 text-accent">
-                                    ⚙️ Admin
-                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent/20 text-accent">⚙️ Admin</span>
                                 {% else %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-700/50 text-gray-300">
-                                    👤 Usuario
-                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-700/50 text-gray-300">👤 Usuario</span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                {{ usuario.fecha_registro.strftime('%d/%m/%Y') }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ usuario.fecha_registro.strftime('%d/%m/%Y') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -189,63 +129,40 @@
             </div>
         </div>
 
-                <!-- Pozos Table -->
-        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mt-8">
+        <!-- Pozos Activos -->
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mb-8">
             <div class="p-6 border-b border-dark-border flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-100">🎱 Pozos Activos</h2>
-                <a href="{{ url_for('crear_pozo') }}" class="bg-accent hover:bg-accent/80 text-dark-bg px-4 py-2 rounded-lg font-semibold transition">
-                    + Nuevo Pozo
-                </a>
+                <a href="{{ url_for('crear_pozo') }}" class="bg-accent hover:bg-accent/80 text-dark-bg px-4 py-2 rounded-lg font-semibold transition">+ Nuevo Pozo</a>
             </div>
-            
             {% if pozos %}
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-dark-bg">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Título
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Nivel
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Fecha
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Acciones
-                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Título</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Nivel</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Fecha</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-dark-border">
                         {% for pozo in pozos %}
                         <tr class="hover:bg-dark-bg/50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">{{ pozo.titulo }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-100">{{ pozo.titulo }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full">
-                                    {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
-                                </span>
+                                <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full">{{ pozo.nivel_min }} - {{ pozo.nivel_max }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                {% if pozo.fecha %}
-                                    {{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}
-                                {% else %}
-                                    Sin fecha
-                                {% endif %}
+                                {% if pozo.fecha %}{{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}{% else %}Sin fecha{% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex space-x-2">
-                                    <a href="{{ url_for('editar_pozo', pozo_id=pozo.id) }}" 
-                                       class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-3 py-1 rounded text-sm transition">
-                                        ✏️ Editar
-                                    </a>
-                                    <a href="{{ url_for('borrar_pozo', pozo_id=pozo.id) }}" 
+                                    <a href="{{ url_for('editar_pozo', pozo_id=pozo.id) }}"
+                                       class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-3 py-1 rounded text-sm transition">✏️ Editar</a>
+                                    <a href="{{ url_for('borrar_pozo', pozo_id=pozo.id) }}"
                                        onclick="return confirm('¿Seguro que quieres eliminar este pozo?')"
-                                       class="bg-red-500/20 hover:bg-red-500/40 text-red-400 px-3 py-1 rounded text-sm transition">
-                                        🗑️ Borrar
-                                    </a>
+                                       class="bg-red-500/20 hover:bg-red-500/40 text-red-400 px-3 py-1 rounded text-sm transition">🗑️ Borrar</a>
                                 </div>
                             </td>
                         </tr>
@@ -257,44 +174,31 @@
             <div class="p-12 text-center">
                 <span class="text-4xl mb-4 block">🎱</span>
                 <p class="text-gray-400">No hay pozos creados</p>
-                <a href="{{ url_for('crear_pozo') }}" class="inline-block mt-4 text-accent hover:text-accent/80">
-                    Crear primer pozo →
-                </a>
+                <a href="{{ url_for('crear_pozo') }}" class="inline-block mt-4 text-accent hover:text-accent/80">Crear primer pozo →</a>
             </div>
             {% endif %}
         </div>
 
-                <!-- Pozos Jugados (Historial) -->
-        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mt-8">
+        <!-- Pozos Jugados (Historial) -->
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
             <div class="p-6 border-b border-dark-border">
                 <h2 class="text-2xl font-bold text-gray-100">📊 Pozos Jugados (Historial)</h2>
             </div>
-            
             {% if pozos_jugados %}
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-dark-bg">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Título
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Fecha
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Media Nivel
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                Acciones
-                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Título</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Fecha</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Media Nivel</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-dark-border">
                         {% for pozo in pozos_jugados %}
                         <tr class="hover:bg-dark-bg/50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-100">{{ pozo.titulo }}</div>
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100">{{ pozo.titulo }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                                 {{ pozo.fecha.strftime('%d/%m/%Y') if pozo.fecha else 'Sin fecha' }}
                             </td>
@@ -304,10 +208,21 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ url_for('ver_resultados', pozo_id=pozo.id) }}" 
-                                class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-3 py-1 rounded text-sm transition">
-                                    👁️ Ver Resultados
-                                </a>
+                                <div class="flex space-x-2">
+                                    <a href="{{ url_for('ver_resultados', pozo_id=pozo.id) }}"
+                                       class="bg-secondary/20 hover:bg-secondary/40 text-secondary px-3 py-1 rounded text-sm transition">
+                                        👁️ Ver
+                                    </a>
+                                    <a href="{{ url_for('editar_pozo_jugado', pozo_id=pozo.id) }}"
+                                       class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 px-3 py-1 rounded text-sm transition">
+                                        ✏️ Editar
+                                    </a>
+                                    <a href="{{ url_for('borrar_pozo_jugado', pozo_id=pozo.id) }}"
+                                       onclick="return confirm('¿Seguro? Se revertirán los puntos y nivel de todos los jugadores de este pozo.')"
+                                       class="bg-red-500/20 hover:bg-red-500/40 text-red-400 px-3 py-1 rounded text-sm transition">
+                                        🗑️ Borrar
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -322,7 +237,6 @@
             {% endif %}
         </div>
 
-        
     </main>
 </div>
 {% endblock %}
