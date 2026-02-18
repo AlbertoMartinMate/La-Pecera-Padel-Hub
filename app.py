@@ -305,6 +305,10 @@ def estadisticas():
         'pct_participaciones': round((participaciones / total_pozos * 100), 1) if total_pozos > 0 else 0,
     }
 
+    # Media total de puntos por pozo
+    puntos_todos = [r.puntos for r in resultados]
+    media_total_puntos = round(sum(puntos_todos) / len(puntos_todos), 1) if puntos_todos else 0
+
     # Historial de nivel (orden cronológico)
     historial = HistorialNivel.query.filter_by(usuario_id=usuario.id)\
         .order_by(HistorialNivel.fecha.asc()).limit(20).all()
@@ -325,7 +329,8 @@ def estadisticas():
                            usuario=usuario,
                            historial=historial,
                            ultimos_pozos=ultimos_pozos,
-                           historial_ranking=historial_ranking)
+                           historial_ranking=historial_ranking,
+                           media_total_puntos=media_total_puntos)
 
 
 @app.route('/ranking')
