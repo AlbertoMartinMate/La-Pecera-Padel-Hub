@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - La Pecera Padel Hub{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-white mb-8">👤 Mi Perfil</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <!-- Foto de perfil -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <h2 class="text-lg font-bold text-white mb-4">Foto de perfil</h2>
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        {% if usuario.foto_perfil and usuario.foto_perfil != 'default.png' %}
+                        <img src="{{ usuario.foto_perfil }}" alt="Foto de perfil"
+                            class="w-24 h-24 rounded-full object-cover border-2 border-secondary">
+                        {% else %}
+                        <div class="w-24 h-24 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center border-2 border-secondary">
+                            <span class="text-4xl font-bold text-dark-bg">{{ usuario.nombre[0].upper() }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm text-gray-400 mb-2">Subir nueva foto</label>
+                        <input type="file" name="foto" accept="image/*"
+                            class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-secondary/20 file:text-secondary hover:file:bg-secondary/30 cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-1">JPG, PNG o GIF. Máx 5MB.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos personales -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <h2 class="text-lg font-bold text-white mb-4">Datos personales</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Nombre</label>
+                        <input type="text" name="nombre" value="{{ usuario.nombre }}" required
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Email</label>
+                        <input type="email" value="{{ usuario.email }}" disabled
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-500 cursor-not-allowed">
+                        <p class="text-xs text-gray-600 mt-1">El email no se puede cambiar</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Teléfono</label>
+                        <input type="tel" name="telefono" value="{{ usuario.telefono or '' }}"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none"
+                            placeholder="+34 600 000 000">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Nivel Playtomic</label>
+                        <input type="text" value="{{ usuario.nivel_playtomic }}" disabled
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-gray-500 cursor-not-allowed">
+                        <p class="text-xs text-gray-600 mt-1">Solo puede modificarlo el administrador</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferencias de juego -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <h2 class="text-lg font-bold text-white mb-4">🎾 Preferencias de juego</h2>
+
+                <div class="mb-5">
+                    <label class="block text-sm text-gray-400 mb-3">Posición en pista</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        {% for valor, etiqueta in [('derecha', '👉 Derecha'), ('izquierda', '👈 Izquierda'), ('ambos', '🔄 Ambos')] %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="posicion_juego" value="{{ valor }}"
+                                {% if usuario.posicion_juego == valor %}checked{% endif %} class="hidden peer">
+                            <div class="text-center border border-dark-border rounded-lg py-3 px-2 text-sm text-gray-400
+                                peer-checked:border-secondary peer-checked:text-secondary peer-checked:bg-secondary/10
+                                hover:border-gray-500 transition">
+                                {{ etiqueta }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm text-gray-400 mb-3">Disponibilidad semanal</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        {% for valor, etiqueta in [('entresemana', '📅 Entresemana'), ('finde', '🏖️ Fin de semana'), ('ambos', '📆 Ambos')] %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="disponibilidad_semana" value="{{ valor }}"
+                                {% if usuario.disponibilidad_semana == valor %}checked{% endif %} class="hidden peer">
+                            <div class="text-center border border-dark-border rounded-lg py-3 px-2 text-sm text-gray-400
+                                peer-checked:border-secondary peer-checked:text-secondary peer-checked:bg-secondary/10
+                                hover:border-gray-500 transition">
+                                {{ etiqueta }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm text-gray-400 mb-3">Disponibilidad horaria <span class="text-gray-600">(puedes marcar varias)</span></label>
+                    <div class="grid grid-cols-3 gap-3">
+                        {% for valor, etiqueta in [('mananas', '🌅 Mañanas'), ('mediodia', '☀️ Mediodía'), ('tardes', '🌆 Tardes')] %}
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="disponibilidad_horaria" value="{{ valor }}"
+                                {% if valor in (usuario.disponibilidad_horaria or '').split(',') %}checked{% endif %}
+                                class="hidden peer">
+                            <div class="text-center border border-dark-border rounded-lg py-3 px-2 text-sm text-gray-400
+                                peer-checked:border-secondary peer-checked:text-secondary peer-checked:bg-secondary/10
+                                hover:border-gray-500 transition">
+                                {{ etiqueta }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notificaciones -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+                <h2 class="text-lg font-bold text-white mb-4">🔔 Notificaciones</h2>
+                <label class="flex items-center space-x-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" name="acepta_notificaciones" value="1"
+                            {% if usuario.acepta_notificaciones %}checked{% endif %}
+                            class="sr-only peer">
+                        <div class="w-11 h-6 bg-dark-bg border border-dark-border rounded-full peer
+                            peer-checked:bg-secondary/30 peer-checked:border-secondary transition"></div>
+                        <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-gray-500 rounded-full transition
+                            peer-checked:translate-x-5 peer-checked:bg-secondary"></div>
+                    </div>
+                    <span class="text-gray-300 group-hover:text-white transition">
+                        Acepto recibir notificaciones del club (nuevos pozos, resultados, avisos)
+                    </span>
+                </label>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col space-y-3">
+                <button type="submit"
+                    class="w-full bg-secondary hover:bg-secondary/80 text-dark-bg font-bold py-3 rounded-xl transition text-lg">
+                    💾 Guardar cambios
+                </button>
+                <a href="{{ url_for('logout') }}"
+                    class="w-full text-center bg-dark-card border border-red-500/30 hover:border-red-500 text-red-400 hover:text-red-300 font-semibold py-3 rounded-xl transition">
+                    🚪 Cerrar Sesión
+                </a>
+            </div>
+
+        </form>
+    </main>
+</div>
+{% endblock %}

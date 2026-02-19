@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
+import cloudinary
+import cloudinary.uploader
 
 app = Flask(__name__)
 
@@ -20,6 +22,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
+
 
 # ── MODELOS ──────────────────────────────────────────────────────────────────
 
@@ -36,6 +44,10 @@ class Usuario(db.Model):
     categoria = db.Column(db.String(20), default='Bronce')
     telefono = db.Column(db.String(20), nullable=True)
     acepta_terminos = db.Column(db.Boolean, default=False)
+    posicion_juego = db.Column(db.String(20), nullable=True)
+    disponibilidad_semana = db.Column(db.String(20), nullable=True)
+    disponibilidad_horaria = db.Column(db.String(50), nullable=True)
+    acepta_notificaciones = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -665,6 +677,49 @@ def borrar_pozo_jugado(pozo_id):
     flash(f'Pozo "{titulo}" eliminado y puntos/nivel revertidos correctamente', 'success')
     return redirect(url_for('admin_panel'))
 
+@app.context_processor
+def inject_usuario_actual():
+    if 'user_id' in session:
+        usuario = Usuario.query.get(session['user_id'])
+        return {'usuario_actual': usuario}
+    return {'usuario_actual': None}
+
+
+@app.route('/perfil', methods=['GET', 'POST'])
+def perfil():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    usuario = Usuario.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        usuario.nombre = request.form.get('nombre', usuario.nombre)
+        usuario.telefono = request.form.get('telefono', usuario.telefono)
+        usuario.posicion_juego = request.form.get('posicion_juego')
+        usuario.disponibilidad_semana = request.form.get('disponibilidad_semana')
+        horaria = request.form.getlist('disponibilidad_horaria')
+        usuario.disponibilidad_horaria = ','.join(horaria) if horaria else None
+        usuario.acepta_notificaciones = 'acepta_notificaciones' in request.form
+
+        foto = request.files.get('foto')
+        if foto and foto.filename:
+            try:
+                resultado = cloudinary.uploader.upload(
+                    foto,
+                    folder='lapecera/perfiles',
+                    transformation=[{'width': 400, 'height': 400, 'crop': 'fill', 'gravity': 'face'}]
+                )
+                usuario.foto_perfil = resultado['secure_url']
+            except Exception as e:
+                flash(f'Error al subir la foto: {str(e)}', 'error')
+
+        session['user_name'] = usuario.nombre
+        db.session.commit()
+        flash('Perfil actualizado correctamente', 'success')
+        return redirect(url_for('perfil'))
+
+    return render_template('perfil.html', usuario=usuario)
+
 # ── INICIALIZACIÓN Y MIGRACIONES ─────────────────────────────────────────────
 
 with app.app_context():
@@ -705,6 +760,19 @@ with app.app_context():
                 conn.execute(text('ALTER TABLE usuario ADD COLUMN acepta_terminos BOOLEAN DEFAULT TRUE'))
                 conn.commit()
                 print("✅ Añadida columna: acepta_terminos")
+
+            if 'posicion_juego' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN posicion_juego VARCHAR(20)'))
+                conn.commit()
+            if 'disponibilidad_semana' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN disponibilidad_semana VARCHAR(20)'))
+                conn.commit()
+            if 'disponibilidad_horaria' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN disponibilidad_horaria VARCHAR(50)'))
+                conn.commit()
+            if 'acepta_notificaciones' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN acepta_notificaciones BOOLEAN DEFAULT FALSE'))
+                conn.commit()
 
         print("✅ Migración de Usuario completada")
     except Exception as e:
