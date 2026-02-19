@@ -151,6 +151,37 @@
             </div>
 
         </form>
+
+        <!-- Cambiar contraseña (formulario separado) -->
+        <form method="POST" action="{{ url_for('cambiar_password') }}" class="mt-6">
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4">🔒 Cambiar Contraseña</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Contraseña actual</label>
+                        <input type="password" name="password_actual" required
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none"
+                            placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Nueva contraseña</label>
+                        <input type="password" name="password_nueva" required minlength="6"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none"
+                            placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Repetir nueva contraseña</label>
+                        <input type="password" name="password_confirmar" required minlength="6"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full mt-5 bg-dark-bg border border-secondary hover:bg-secondary/10 text-secondary font-bold py-3 rounded-xl transition">
+                    🔒 Cambiar contraseña
+                </button>
+            </div>
+        </form>
     </main>
 </div>
 {% endblock %}

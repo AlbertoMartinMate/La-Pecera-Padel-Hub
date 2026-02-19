@@ -720,6 +720,33 @@ def perfil():
 
     return render_template('perfil.html', usuario=usuario)
 
+@app.route('/cambiar_password', methods=['POST'])
+def cambiar_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    usuario = Usuario.query.get(session['user_id'])
+    password_actual = request.form.get('password_actual')
+    password_nueva = request.form.get('password_nueva')
+    password_confirmar = request.form.get('password_confirmar')
+
+    if not usuario.check_password(password_actual):
+        flash('La contraseña actual no es correcta', 'error')
+        return redirect(url_for('perfil'))
+
+    if password_nueva != password_confirmar:
+        flash('Las contraseñas nuevas no coinciden', 'error')
+        return redirect(url_for('perfil'))
+
+    if len(password_nueva) < 6:
+        flash('La contraseña debe tener al menos 6 caracteres', 'error')
+        return redirect(url_for('perfil'))
+
+    usuario.set_password(password_nueva)
+    db.session.commit()
+    flash('Contraseña cambiada correctamente', 'success')
+    return redirect(url_for('perfil'))
+
 # ── INICIALIZACIÓN Y MIGRACIONES ─────────────────────────────────────────────
 
 with app.app_context():
