@@ -8,41 +8,62 @@
     <p class="text-center text-gray-400 mb-8">Tu nivel: {{ mi_nivel }}</p>
 
     {% if pozos %}
-    <div class="grid gap-6">
-        {% for pozo in pozos %}
-        <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-primary transition-all">
-            <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-white">{{ pozo.titulo }}</h3>
-                <span class="bg-gradient-to-r from-purple-600 to-purple-400 text-white px-3 py-1 rounded-full text-sm">
-                    Nivel {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
-                </span>
-            </div>
-            {% if pozo.fecha %}
-            <p class="text-gray-400 mb-4">📅 {{ pozo.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
-            {% endif %}
-            <a href="{{ pozo.enlace }}" target="_blank"
-               class="inline-block bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                Inscribirse →
-            </a>
+    <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[480px]">
+                <thead class="bg-dark-bg">
+                    <tr>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Pozo</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Fecha</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Nivel</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-dark-border">
+                    {% for pozo in pozos %}
+                    <tr class="hover:bg-dark-bg/50 transition">
+                        <td class="px-5 py-4">
+                            <span class="text-white font-semibold text-base">{{ pozo.titulo }}</span>
+                        </td>
+                        <td class="px-4 py-4 text-center whitespace-nowrap">
+                            {% if pozo.fecha %}
+                            <span class="text-gray-300 text-sm">{{ pozo.fecha.strftime('%d/%m/%Y') }}</span>
+                            <span class="block text-gray-500 text-xs">{{ pozo.fecha.strftime('%H:%M') }}h</span>
+                            {% else %}
+                            <span class="text-gray-500 text-sm">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full whitespace-nowrap">
+                                {{ pozo.nivel_min }} - {{ pozo.nivel_max }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <a href="{{ pozo.enlace }}" target="_blank"
+                               class="inline-block bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition-transform whitespace-nowrap">
+                                Inscribirse →
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% endfor %}
     </div>
     {% else %}
-    <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
+    <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center mb-12">
         <p class="text-gray-400 text-lg mb-2">😕 No hay pozos disponibles para tu nivel ahora mismo</p>
         <p class="text-gray-500 text-sm">Los pozos aparecerán cuando el admin cree uno para tu nivel ({{ mi_nivel }})</p>
     </div>
     {% endif %}
 
     <!-- ── Historial de Pozos Jugados ─────────────────────────────── -->
-    <div class="mt-12">
+    <div>
         <h2 class="text-2xl font-bold text-white mb-6">📋 Mis Pozos Jugados</h2>
 
         {% if pozos_jugados %}
-
-        <!-- Scroll lateral habilitado en móvil -->
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-            <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs md:text-sm min-w-[500px]">
                     <thead class="bg-dark-bg">
                         <tr>
@@ -60,15 +81,10 @@
                             <td class="px-3 py-2 text-white font-medium max-w-[120px] truncate">{{ item.titulo }}</td>
                             <td class="px-3 py-2 text-gray-400 text-center whitespace-nowrap">{{ item.fecha }}</td>
                             <td class="px-3 py-2 text-center whitespace-nowrap">
-                                {% if item.posicion == 1 %}
-                                    <span class="text-yellow-400 font-bold">🥇</span>
-                                {% elif item.posicion == 2 %}
-                                    <span class="text-gray-300 font-bold">🥈</span>
-                                {% elif item.posicion == 3 %}
-                                    <span class="text-orange-400 font-bold">🥉</span>
-                                {% else %}
-                                    <span class="text-purple-400 text-xs">Part.</span>
-                                {% endif %}
+                                {% if item.posicion == 1 %}<span class="text-yellow-400 font-bold">🥇</span>
+                                {% elif item.posicion == 2 %}<span class="text-gray-300 font-bold">🥈</span>
+                                {% elif item.posicion == 3 %}<span class="text-orange-400 font-bold">🥉</span>
+                                {% else %}<span class="text-purple-400 text-xs">Part.</span>{% endif %}
                             </td>
                             <td class="px-3 py-2 text-center">
                                 <span class="text-green-400 font-bold">+{{ item.puntos }}</span>

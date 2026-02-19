@@ -7,47 +7,68 @@
     <main class="max-w-4xl mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center text-white mb-2">🏆 Ranking del Club</h1>
         <p class="text-center text-gray-400 mb-8">Clasificación por puntos acumulados</p>
-        
+
         {% if usuarios %}
-        <div class="space-y-4">
-            {% for usuario in usuarios %}
-            <div class="bg-dark-card border border-dark-border rounded-xl p-4 flex items-center justify-between
-                {% if loop.index == 1 %}border-yellow-500/50 bg-yellow-500/10{% endif %}
-                {% if loop.index == 2 %}border-gray-400/50 bg-gray-400/10{% endif %}
-                {% if loop.index == 3 %}border-orange-600/50 bg-orange-600/10{% endif %}">
-                
-                <div class="flex items-center space-x-4">
-                    <!-- Posición -->
-                    <div class="w-12 h-12 flex items-center justify-center rounded-full
-                        {% if loop.index == 1 %}bg-yellow-500 text-dark-bg{% endif %}
-                        {% if loop.index == 2 %}bg-gray-400 text-dark-bg{% endif %}
-                        {% if loop.index == 3 %}bg-orange-600 text-white{% endif %}
-                        {% if loop.index > 3 %}bg-dark-bg text-gray-400{% endif %}">
-                        <span class="font-bold text-lg">{{ loop.index }}</span>
-                    </div>
-                    
-                    <!-- Avatar e info -->
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center">
-                            <span class="text-lg font-bold text-dark-bg">
-                                {{ usuario.nombre[0].upper() }}
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-dark-bg">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase w-12">#</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Jugador</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Nivel</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-400 uppercase">Puntos</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-dark-border">
+                    {% for usuario in usuarios %}
+                    <tr class="hover:bg-dark-bg/50 transition
+                        {% if loop.index == 1 %}bg-yellow-500/5{% endif %}
+                        {% if loop.index == 2 %}bg-gray-400/5{% endif %}
+                        {% if loop.index == 3 %}bg-orange-600/5{% endif %}">
+
+                        <!-- Posición -->
+                        <td class="px-4 py-3">
+                            <div class="w-9 h-9 flex items-center justify-center rounded-full font-bold text-sm
+                                {% if loop.index == 1 %}bg-yellow-500 text-dark-bg{% elif loop.index == 2 %}bg-gray-400 text-dark-bg{% elif loop.index == 3 %}bg-orange-600 text-white{% else %}bg-dark-bg text-gray-400{% endif %}">
+                                {{ loop.index }}
+                            </div>
+                        </td>
+
+                        <!-- Jugador -->
+                        <td class="px-4 py-3">
+                            <div class="flex items-center space-x-3">
+                                {% if usuario.foto_perfil and usuario.foto_perfil != 'default.png' %}
+                                <img src="{{ usuario.foto_perfil }}" alt="{{ usuario.nombre }}"
+                                    class="w-10 h-10 rounded-full object-cover border-2
+                                    {% if loop.index == 1 %}border-yellow-500{% elif loop.index == 2 %}border-gray-400{% elif loop.index == 3 %}border-orange-600{% else %}border-dark-border{% endif %}">
+                                {% else %}
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-dark-bg border-2
+                                    {% if loop.index == 1 %}bg-yellow-500 border-yellow-500{% elif loop.index == 2 %}bg-gray-400 border-gray-400{% elif loop.index == 3 %}bg-orange-600 border-orange-600{% else %}bg-gradient-to-br from-secondary to-accent border-dark-border{% endif %}">
+                                    {{ usuario.nombre[0].upper() }}
+                                </div>
+                                {% endif %}
+                                <span class="font-semibold text-white text-base">{{ usuario.nombre }}</span>
+                            </div>
+                        </td>
+
+                        <!-- Nivel -->
+                        <td class="px-4 py-3 text-center">
+                            <span class="text-xs text-purple-400 bg-purple-400/20 px-2 py-1 rounded-full">
+                                {{ usuario.nivel_playtomic }}
                             </span>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-white">{{ usuario.nombre }}</p>
-                            <p class="text-sm text-gray-400">Nivel {{ usuario.nivel_playtomic }}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Puntos -->
-                <div class="text-right">
-                    <p class="text-2xl font-bold text-green-400">{{ usuario.puntos_ranking }}</p>
-                    <p class="text-xs text-gray-400">puntos</p>
-                </div>
-            </div>
-            {% endfor %}
+                        </td>
+
+                        <!-- Puntos -->
+                        <td class="px-4 py-3 text-right">
+                            <span class="text-xl font-bold text-green-400">{{ usuario.puntos_ranking }}</span>
+                            <span class="text-xs text-gray-500 ml-1">pts</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
         {% else %}
         <div class="bg-dark-card border border-dark-border rounded-xl p-12 text-center">
             <span class="text-6xl mb-4 block">🏆</span>
