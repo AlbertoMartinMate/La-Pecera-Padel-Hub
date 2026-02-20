@@ -122,20 +122,37 @@
             <!-- Notificaciones -->
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
                 <h2 class="text-lg font-bold text-white mb-4">🔔 Notificaciones</h2>
-                <label class="flex items-center space-x-3 cursor-pointer group">
-                    <div class="relative">
-                        <input type="checkbox" name="acepta_notificaciones" value="1"
-                            {% if usuario.acepta_notificaciones %}checked{% endif %}
-                            class="sr-only peer">
-                        <div class="w-11 h-6 bg-dark-bg border border-dark-border rounded-full peer
-                            peer-checked:bg-secondary/30 peer-checked:border-secondary transition"></div>
-                        <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-gray-500 rounded-full transition
-                            peer-checked:translate-x-5 peer-checked:bg-secondary"></div>
-                    </div>
-                    <span class="text-gray-300 group-hover:text-white transition">
-                        Acepto recibir notificaciones del club (nuevos pozos, resultados, avisos)
-                    </span>
-                </label>
+                <div class="space-y-4">
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" name="acepta_notificaciones" value="1"
+                                {% if usuario.acepta_notificaciones %}checked{% endif %}
+                                class="sr-only peer">
+                            <div class="w-11 h-6 bg-dark-bg border border-dark-border rounded-full peer
+                                peer-checked:bg-secondary/30 peer-checked:border-secondary transition"></div>
+                            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-gray-500 rounded-full transition
+                                peer-checked:translate-x-5 peer-checked:bg-secondary"></div>
+                        </div>
+                        <span class="text-gray-300 group-hover:text-white transition">
+                            Acepto recibir notificaciones del club (nuevos pozos, resultados, avisos)
+                        </span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" name="disponible_sustituciones" value="1"
+                                {% if usuario.disponible_sustituciones %}checked{% endif %}
+                                class="sr-only peer">
+                            <div class="w-11 h-6 bg-dark-bg border border-dark-border rounded-full peer
+                                peer-checked:bg-secondary/30 peer-checked:border-secondary transition"></div>
+                            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-gray-500 rounded-full transition
+                                peer-checked:translate-x-5 peer-checked:bg-secondary"></div>
+                        </div>
+                        <span class="text-gray-300 group-hover:text-white transition">
+                            ⚡ Aviso para disponibilidad de última hora
+                            <span class="block text-xs text-gray-500">El club te avisará si hay una plaza libre de última hora</span>
+                        </span>
+                    </label>
+                </div>
             </div>
 
             <!-- Botones -->

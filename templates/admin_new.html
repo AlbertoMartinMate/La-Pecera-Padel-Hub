@@ -179,6 +179,103 @@
             {% endif %}
         </div>
 
+        <!-- Filtros de usuarios -->
+        <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-100 mb-6">🔍 Filtrar Usuarios</h2>
+            <form method="GET" action="{{ url_for('admin_panel') }}" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Disponibilidad semanal -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Disponibilidad semanal</label>
+                        <select name="disponibilidad_semana"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none">
+                            <option value="">Todos</option>
+                            <option value="entresemana" {% if filtro_semana == 'entresemana' %}selected{% endif %}>Entresemana</option>
+                            <option value="finde" {% if filtro_semana == 'finde' %}selected{% endif %}>Fin de semana</option>
+                            <option value="ambos" {% if filtro_semana == 'ambos' %}selected{% endif %}>Ambos</option>
+                        </select>
+                    </div>
+                    <!-- Disponibilidad horaria -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Horario</label>
+                        <select name="disponibilidad_horaria"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none">
+                            <option value="">Todos</option>
+                            <option value="mananas" {% if filtro_horario == 'mananas' %}selected{% endif %}>Mañanas</option>
+                            <option value="mediodia" {% if filtro_horario == 'mediodia' %}selected{% endif %}>Mediodía</option>
+                            <option value="tardes" {% if filtro_horario == 'tardes' %}selected{% endif %}>Tardes</option>
+                        </select>
+                    </div>
+                    <!-- Última hora -->
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Disponibilidad última hora</label>
+                        <select name="ultima_hora"
+                            class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-secondary focus:outline-none">
+                            <option value="">Todos</option>
+                            <option value="1" {% if filtro_ultima_hora == '1' %}selected{% endif %}>⚡ Solo disponibles</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button type="submit"
+                        class="bg-secondary hover:bg-secondary/80 text-dark-bg font-bold px-6 py-2 rounded-lg transition">
+                        Filtrar
+                    </button>
+                    <a href="{{ url_for('admin_panel') }}"
+                        class="bg-dark-bg border border-dark-border hover:border-gray-500 text-gray-300 font-semibold px-6 py-2 rounded-lg transition">
+                        Limpiar
+                    </a>
+                </div>
+            </form>
+
+            {% if filtro_semana or filtro_horario or filtro_ultima_hora %}
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold text-white mb-3">
+                    Usuarios encontrados: <span class="text-secondary">{{ usuarios_filtrados|length }}</span>
+                </h3>
+                {% if usuarios_filtrados %}
+                <div class="bg-dark-bg border border-dark-border rounded-xl overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-dark-border">
+                                <th class="px-4 py-3 text-left text-gray-400">Nombre</th>
+                                <th class="px-4 py-3 text-left text-gray-400">Email</th>
+                                <th class="px-4 py-3 text-left text-gray-400">Teléfono</th>
+                                <th class="px-4 py-3 text-center text-gray-400">Disponibilidad</th>
+                                <th class="px-4 py-3 text-center text-gray-400">⚡ Última hora</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-dark-border">
+                            {% for u in usuarios_filtrados %}
+                            <tr class="hover:bg-dark-card/50">
+                                <td class="px-4 py-3 text-white font-medium">{{ u.nombre }}</td>
+                                <td class="px-4 py-3 text-gray-300">{{ u.email }}</td>
+                                <td class="px-4 py-3 text-gray-300">{{ u.telefono or '-' }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-xs text-purple-400">{{ u.disponibilidad_semana or '-' }}</span>
+                                    {% if u.disponibilidad_horaria %}
+                                    <span class="block text-xs text-gray-500">{{ u.disponibilidad_horaria.replace(',', ' / ') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    {% if u.disponible_sustituciones %}
+                                    <span class="text-yellow-400">⚡ Sí</span>
+                                    {% else %}
+                                    <span class="text-gray-600">No</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-sm">No hay usuarios con esos filtros.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
         <!-- Pozos Jugados (Historial) -->
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
             <div class="p-6 border-b border-dark-border">

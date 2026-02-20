@@ -52,6 +52,7 @@ class Usuario(db.Model):
     disponibilidad_horaria = db.Column(db.String(50), nullable=True)
     acepta_notificaciones = db.Column(db.Boolean, default=False)
     reset_token = db.Column(db.String(100), nullable=True)
+    disponible_sustituciones = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -369,7 +370,6 @@ def logout():
 def admin_panel():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-
     if not session.get('is_admin'):
         flash('No tienes permisos de administrador', 'error')
         return redirect(url_for('dashboard'))
@@ -378,10 +378,32 @@ def admin_panel():
     pozos = Pozo.query.filter_by(activo=True).order_by(Pozo.fecha).all()
     pozos_jugados = PozoJugado.query.order_by(PozoJugado.fecha.desc()).all()
 
-    return render_template('admin_new.html', usuarios=usuarios, pozos=pozos, pozos_jugados=pozos_jugados)
+    # Filtros
+    filtro_semana = request.args.get('disponibilidad_semana', '')
+    filtro_horario = request.args.get('disponibilidad_horaria', '')
+    filtro_ultima_hora = request.args.get('ultima_hora', '')
+
+    query = Usuario.query
+    if filtro_semana:
+        query = query.filter(Usuario.disponibilidad_semana == filtro_semana)
+    if filtro_horario:
+        query = query.filter(Usuario.disponibilidad_horaria.contains(filtro_horario))
+    if filtro_ultima_hora:
+        query = query.filter(Usuario.disponible_sustituciones == True)
+    usuarios_filtrados = query.order_by(Usuario.nombre).all() if (filtro_semana or filtro_horario or filtro_ultima_hora) else []
+
+    return render_template('admin_new.html',
+                           usuarios=usuarios,
+                           pozos=pozos,
+                           pozos_jugados=pozos_jugados,
+                           usuarios_filtrados=usuarios_filtrados,
+                           filtro_semana=filtro_semana,
+                           filtro_horario=filtro_horario,
+                           filtro_ultima_hora=filtro_ultima_hora)
 
 
 @app.route('/admin/toggle_user/<int:user_id>')
+
 def toggle_user(user_id):
     if 'user_id' not in session or not session.get('is_admin'):
         flash('No tienes permisos de administrador', 'error')
@@ -704,6 +726,7 @@ def perfil():
         horaria = request.form.getlist('disponibilidad_horaria')
         usuario.disponibilidad_horaria = ','.join(horaria) if horaria else None
         usuario.acepta_notificaciones = 'acepta_notificaciones' in request.form
+        usuario.disponible_sustituciones = 'disponible_sustituciones' in request.form
 
         foto = request.files.get('foto')
         if foto and foto.filename:
@@ -873,6 +896,10 @@ with app.app_context():
 
             if 'reset_token' not in columns:
                 conn.execute(text('ALTER TABLE usuario ADD COLUMN reset_token VARCHAR(100)'))
+                conn.commit()
+            
+            if 'disponible_sustituciones' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN disponible_sustituciones BOOLEAN DEFAULT FALSE'))
                 conn.commit()
 
         print("✅ Migración de Usuario completada")
