@@ -211,7 +211,8 @@ def dashboard():
     proximos_pozos = Pozo.query.filter(
         Pozo.activo == True,
         Pozo.nivel_min <= mi_nivel,
-        Pozo.nivel_max >= mi_nivel
+        Pozo.nivel_max >= mi_nivel,
+        Pozo.fecha >= datetime.utcnow()
     ).order_by(Pozo.fecha).limit(3).all()
 
     usuarios_ranking = Usuario.query.order_by(Usuario.puntos_ranking.desc()).all()
@@ -257,7 +258,8 @@ def pozos():
     pozos = Pozo.query.filter(
         Pozo.activo == True,
         Pozo.nivel_min <= mi_nivel,
-        Pozo.nivel_max >= mi_nivel
+        Pozo.nivel_max >= mi_nivel,
+        Pozo.fecha >= datetime.utcnow()
     ).order_by(Pozo.fecha).all()
 
     # Historial de pozos jugados del usuario
