@@ -6,7 +6,7 @@ import os
 import cloudinary
 import cloudinary.uploader
 from sendgrid import SendGridAPIClient
-from sendgrid.mail import Mail
+from sendgrid.helpers.mail import Mail
 import secrets
 
 app = Flask(__name__)
@@ -876,7 +876,7 @@ with app.app_context():
                 conn.commit()
 
         print("✅ Migración de Usuario completada")
-        
+
     except Exception as e:
         print(f"Migración Usuario: {e}")
 
