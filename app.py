@@ -382,15 +382,26 @@ def admin_panel():
     filtro_semana = request.args.get('disponibilidad_semana', '')
     filtro_horario = request.args.get('disponibilidad_horaria', '')
     filtro_ultima_hora = request.args.get('ultima_hora', '')
+    filtro_nivel_min = request.args.get('nivel_min', '')
+    filtro_nivel_max = request.args.get('nivel_max', '')
 
     query = Usuario.query
     if filtro_semana:
-        query = query.filter(Usuario.disponibilidad_semana == filtro_semana)
+        query = query.filter(
+            (Usuario.disponibilidad_semana == filtro_semana) |
+            (Usuario.disponibilidad_semana == 'ambos')
+        )
     if filtro_horario:
         query = query.filter(Usuario.disponibilidad_horaria.contains(filtro_horario))
     if filtro_ultima_hora:
         query = query.filter(Usuario.disponible_sustituciones == True)
-    usuarios_filtrados = query.order_by(Usuario.nombre).all() if (filtro_semana or filtro_horario or filtro_ultima_hora) else []
+    if filtro_nivel_min:
+        query = query.filter(Usuario.nivel_playtomic >= float(filtro_nivel_min))
+    if filtro_nivel_max:
+        query = query.filter(Usuario.nivel_playtomic <= float(filtro_nivel_max))
+
+    hay_filtro = any([filtro_semana, filtro_horario, filtro_ultima_hora, filtro_nivel_min, filtro_nivel_max])
+    usuarios_filtrados = query.order_by(Usuario.nombre).all() if hay_filtro else []
 
     return render_template('admin_new.html',
                            usuarios=usuarios,
@@ -399,7 +410,9 @@ def admin_panel():
                            usuarios_filtrados=usuarios_filtrados,
                            filtro_semana=filtro_semana,
                            filtro_horario=filtro_horario,
-                           filtro_ultima_hora=filtro_ultima_hora)
+                           filtro_ultima_hora=filtro_ultima_hora,
+                           filtro_nivel_min=filtro_nivel_min,
+                           filtro_nivel_max=filtro_nivel_max)
 
 
 @app.route('/admin/toggle_user/<int:user_id>')
