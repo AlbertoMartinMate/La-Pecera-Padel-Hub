@@ -5,6 +5,9 @@ from datetime import datetime
 import os
 import cloudinary
 import cloudinary.uploader
+from sendgrid import SendGridAPIClient
+from sendgrid.mail import Mail
+import secrets
 
 app = Flask(__name__)
 
@@ -48,6 +51,7 @@ class Usuario(db.Model):
     disponibilidad_semana = db.Column(db.String(20), nullable=True)
     disponibilidad_horaria = db.Column(db.String(50), nullable=True)
     acepta_notificaciones = db.Column(db.Boolean, default=False)
+    reset_token = db.Column(db.String(100), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -747,6 +751,72 @@ def cambiar_password():
     flash('Contraseña cambiada correctamente', 'success')
     return redirect(url_for('perfil'))
 
+
+@app.route('/recuperar_password', methods=['GET', 'POST'])
+def recuperar_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario:
+            token = secrets.token_urlsafe(32)
+            usuario.reset_token = token
+            db.session.commit()
+            app_url = os.environ.get('APP_URL', 'http://localhost:5001')
+            enlace = f"{app_url}/reset_password/{token}"
+            mensaje = Mail(
+                from_email=os.environ.get('SENDGRID_FROM_EMAIL'),
+                to_emails=email,
+                subject='Recuperar contraseña - La Pecera Padel Hub',
+                html_content=f'''
+                <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
+                    <h2 style="color: #10b981;">🎾 La Pecera Padel Hub</h2>
+                    <p>Hola <strong>{usuario.nombre}</strong>,</p>
+                    <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+                    <p>
+                        <a href="{enlace}" style="background:#10b981;color:white;padding:12px 24px;
+                        border-radius:8px;text-decoration:none;font-weight:bold;">
+                            Restablecer contraseña
+                        </a>
+                    </p>
+                    <p style="color:#999;font-size:12px;">
+                        Este enlace expira en 1 hora. Si no solicitaste esto, ignora este email.
+                    </p>
+                </div>
+                '''
+            )
+            try:
+                sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                sg.send(mensaje)
+            except Exception as e:
+                print(f"Error SendGrid: {e}")
+        flash('Si el email existe, recibirás un enlace en breve', 'success')
+        return redirect(url_for('login'))
+    return render_template('recuperar_password.html')
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    usuario = Usuario.query.filter_by(reset_token=token).first()
+    if not usuario:
+        flash('Enlace inválido o expirado', 'error')
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        password_nueva = request.form.get('password_nueva')
+        password_confirmar = request.form.get('password_confirmar')
+        if password_nueva != password_confirmar:
+            flash('Las contraseñas no coinciden', 'error')
+            return redirect(url_for('reset_password', token=token))
+        if len(password_nueva) < 6:
+            flash('La contraseña debe tener al menos 6 caracteres', 'error')
+            return redirect(url_for('reset_password', token=token))
+        usuario.set_password(password_nueva)
+        usuario.reset_token = None
+        db.session.commit()
+        flash('Contraseña cambiada correctamente, ya puedes iniciar sesión', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html')
+
+
 # ── INICIALIZACIÓN Y MIGRACIONES ─────────────────────────────────────────────
 
 with app.app_context():
@@ -801,7 +871,12 @@ with app.app_context():
                 conn.execute(text('ALTER TABLE usuario ADD COLUMN acepta_notificaciones BOOLEAN DEFAULT FALSE'))
                 conn.commit()
 
+            if 'reset_token' not in columns:
+                conn.execute(text('ALTER TABLE usuario ADD COLUMN reset_token VARCHAR(100)'))
+                conn.commit()
+
         print("✅ Migración de Usuario completada")
+        
     except Exception as e:
         print(f"Migración Usuario: {e}")
 
